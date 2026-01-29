@@ -479,7 +479,7 @@
         }
         
         /* Table */
-        .requests-container {
+        .requests-container, .operators-container {
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -542,6 +542,24 @@
         .status-completed {
             background-color: #f1f8e9;
             color: #689f38;
+        }
+        
+        /* Operator Status */
+        .operator-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .operator-active {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+        
+        .operator-inactive {
+            background-color: #ffebee;
+            color: var(--danger-color);
         }
         
         /* Filters */
@@ -671,6 +689,56 @@
             color: var(--secondary-color);
         }
         
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Operator Card */
+        .operator-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .operator-info h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .operator-info p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .operator-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .operator-stat {
+            text-align: center;
+        }
+        
+        .operator-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        .operator-stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
         /* Mobile */
         @media (max-width: 768px) {
             .header-container {
@@ -696,6 +764,17 @@
             .auth-box {
                 padding: 30px 20px;
                 margin: 20px;
+            }
+            
+            .operator-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .operator-stats {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
@@ -899,7 +978,7 @@
                                     <i class="fas fa-users"></i>
                                 </div>
                                 <div class="stat-info">
-                                    <h3 id="total-operators">5</h3>
+                                    <h3 id="total-operators">0</h3>
                                     <p>Operatör Sayısı</p>
                                 </div>
                             </div>
@@ -962,20 +1041,123 @@
                         </div>
                     </div>
                     
-                    <!-- Other content sections (initially hidden) -->
-                    <div id="requests-content" style="display: none;">
-                        <h2>Tüm Talepler</h2>
-                        <!-- Content for all requests -->
-                    </div>
-                    
+                    <!-- Operators Content -->
                     <div id="operators-content" style="display: none;">
-                        <h2>Operatör Yönetimi</h2>
-                        <!-- Content for operators -->
+                        <div class="section-header">
+                            <h2><i class="fas fa-user-plus"></i> Operatör Yönetimi</h2>
+                            <button class="btn btn-primary" id="add-operator-btn">
+                                <i class="fas fa-plus"></i> Yeni Operatör Ekle
+                            </button>
+                        </div>
+                        
+                        <div class="filters">
+                            <div class="filter-group">
+                                <label for="operator-status-filter">Durum</label>
+                                <select id="operator-status-filter">
+                                    <option value="all">Tümü</option>
+                                    <option value="aktif">Aktif</option>
+                                    <option value="pasif">Pasif</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="operator-specialty-filter">Uzmanlık</label>
+                                <select id="operator-specialty-filter">
+                                    <option value="all">Tümü</option>
+                                    <option value="Kaynak">Kaynak</option>
+                                    <option value="Talaşlı İmalat">Talaşlı İmalat</option>
+                                    <option value="Montaj">Montaj</option>
+                                    <option value="Kalite Kontrol">Kalite Kontrol</option>
+                                    <option value="Bakım">Bakım</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="operators-list-container">
+                            <div id="operators-loading" class="data-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Operatörler yükleniyor...</p>
+                            </div>
+                            <div id="operators-list">
+                                <!-- Operators will be loaded here -->
+                            </div>
+                        </div>
                     </div>
                     
+                    <!-- Statistics Content -->
                     <div id="stats-content" style="display: none;">
-                        <h2>İstatistikler</h2>
-                        <!-- Content for statistics -->
+                        <div class="section-header">
+                            <h2><i class="fas fa-chart-bar"></i> İstatistikler ve Raporlar</h2>
+                            <div class="filters">
+                                <div class="filter-group">
+                                    <label for="stats-period">Periyot</label>
+                                    <select id="stats-period">
+                                        <option value="week">Bu Hafta</option>
+                                        <option value="month">Bu Ay</option>
+                                        <option value="quarter">Bu Çeyrek</option>
+                                        <option value="year">Bu Yıl</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: var(--secondary-color);">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="stats-total-jobs">0</h3>
+                                    <p>Toplam İş Sayısı</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: var(--success-color);">
+                                    <i class="fas fa-check-double"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="stats-completion-rate">0%</h3>
+                                    <p>Tamamlanma Oranı</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: var(--warning-color);">
+                                    <i class="fas fa-calendar-times"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="stats-delayed-jobs">0</h3>
+                                    <p>Geciken İşler</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: #9b59b6;">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="stats-top-operator">-</h3>
+                                    <p>En Üretken Operatör</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="requests-container" style="margin-top: 30px;">
+                            <h3 style="padding: 20px 20px 0;">En Çok Talep Eden Birimler</h3>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Birim</th>
+                                            <th>Talep Sayısı</th>
+                                            <th>Tamamlanan</th>
+                                            <th>Devam Eden</th>
+                                            <th>Ort. Süre (gün)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="unit-stats-list">
+                                        <!-- Unit statistics will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </main>
             </div>
@@ -1032,6 +1214,72 @@
             </div>
         </div>
         
+        <!-- Add/Edit Operator Modal -->
+        <div id="operator-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="operator-modal-title">Yeni Operatör Ekle</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="operator-form">
+                        <div class="form-group">
+                            <label for="operator-name">Operatör Adı Soyadı</label>
+                            <input type="text" id="operator-name" placeholder="Operatör adı ve soyadı" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="operator-email">E-posta Adresi</label>
+                            <input type="email" id="operator-email" placeholder="operatör@firma.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="operator-phone">Telefon Numarası</label>
+                            <input type="tel" id="operator-phone" placeholder="05XX XXX XX XX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="operator-specialty">Uzmanlık Alanı</label>
+                            <select id="operator-specialty" required>
+                                <option value="">Uzmanlık Seçiniz</option>
+                                <option value="Kaynak">Kaynak</option>
+                                <option value="Talaşlı İmalat">Talaşlı İmalat</option>
+                                <option value="Montaj">Montaj</option>
+                                <option value="Kalite Kontrol">Kalite Kontrol</option>
+                                <option value="Bakım">Bakım</option>
+                                <option value="Diğer">Diğer</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="operator-experience">Deneyim (yıl)</label>
+                            <input type="number" id="operator-experience" min="0" max="50" value="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="operator-status">Durum</label>
+                            <select id="operator-status" required>
+                                <option value="aktif">Aktif</option>
+                                <option value="pasif">Pasif</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="operator-notes">Notlar (Opsiyonel)</label>
+                            <textarea id="operator-notes" placeholder="Operatör hakkında notlar..."></textarea>
+                        </div>
+                        
+                        <input type="hidden" id="operator-id" value="">
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                            <button type="button" class="btn btn-secondary close-modal">İptal</button>
+                            <button type="submit" class="btn btn-primary" id="operator-modal-submit-btn">Operatör Ekle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
         <!-- Start Job Modal -->
         <div id="start-job-modal" class="modal">
             <div class="modal-content">
@@ -1044,11 +1292,7 @@
                         <label for="start-job-operator">Operatör Ataması</label>
                         <select id="start-job-operator">
                             <option value="">Operatör Seçiniz</option>
-                            <option value="Ahmet Yılmaz">Ahmet Yılmaz (Kaynak Uzmanı)</option>
-                            <option value="Mehmet Demir">Mehmet Demir (Talaşlı İmalat)</option>
-                            <option value="Ayşe Kaya">Ayşe Kaya (Montaj)</option>
-                            <option value="Mustafa Şahin">Mustafa Şahin (Kaynak)</option>
-                            <option value="Zeynep Arslan">Zeynep Arslan (Kalite Kontrol)</option>
+                            <!-- Operators will be loaded dynamically -->
                         </select>
                     </div>
                     <div class="form-group">
@@ -1089,6 +1333,25 @@
             </div>
         </div>
         
+        <!-- Delete Confirmation Modal -->
+        <div id="delete-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="delete-modal-title">Silme Onayı</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="delete-message">Bu öğeyi silmek istediğinizden emin misiniz?</p>
+                    <input type="hidden" id="delete-id" value="">
+                    <input type="hidden" id="delete-type" value="">
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                        <button type="button" class="btn btn-secondary close-modal">İptal</button>
+                        <button type="button" class="btn btn-danger" id="confirm-delete">Sil</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <footer>
             <div class="container">
                 <p>ÜMM Ekip Talep Yönetim Sistemi &copy; <span id="current-year"></span> - Tüm hakları saklıdır.</p>
@@ -1118,21 +1381,8 @@
         // Global variables
         let currentUser = null;
         let requests = [];
-        let operators = [
-            { id: "op1", name: "Ahmet Yılmaz", specialty: "Kaynak Uzmanı", status: "aktif" },
-            { id: "op2", name: "Mehmet Demir", specialty: "Talaşlı İmalat", status: "aktif" },
-            { id: "op3", name: "Ayşe Kaya", specialty: "Montaj", status: "aktif" },
-            { id: "op4", name: "Mustafa Şahin", specialty: "Kaynak", status: "aktif" },
-            { id: "op5", name: "Zeynep Arslan", specialty: "Kalite Kontrol", status: "aktif" }
-        ];
-
-        // Status labels
-        const statusLabels = {
-            "new": { text: "Yeni Talep", class: "status-new" },
-            "assigned": { text: "Operatör Atandı", class: "status-assigned" },
-            "inprogress": { text: "Devam Ediyor", class: "status-inprogress" },
-            "completed": { text: "Tamamlandı", class: "status-completed" }
-        };
+        let operators = [];
+        let unitStatistics = {};
 
         // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
@@ -1153,7 +1403,7 @@
                     // User is signed in
                     currentUser = user;
                     showApp();
-                    loadRequestsFromFirestore();
+                    loadAllData();
                 } else {
                     // User is signed out
                     currentUser = null;
@@ -1185,8 +1435,12 @@
             // Add request button
             document.getElementById('add-request-btn').addEventListener('click', openAddRequestModal);
             
-            // Request form
+            // Add operator button
+            document.getElementById('add-operator-btn').addEventListener('click', openAddOperatorModal);
+            
+            // Forms
             document.getElementById('request-form').addEventListener('submit', handleRequestSubmit);
+            document.getElementById('operator-form').addEventListener('submit', handleOperatorSubmit);
             
             // Modals
             document.querySelectorAll('.close-modal').forEach(btn => {
@@ -1201,15 +1455,17 @@
                 });
             });
             
-            // Start job
+            // Actions
             document.getElementById('confirm-start-job').addEventListener('click', handleStartJob);
-            
-            // Complete job
             document.getElementById('confirm-complete-job').addEventListener('click', handleCompleteJob);
+            document.getElementById('confirm-delete').addEventListener('click', handleDelete);
             
             // Filters
             document.getElementById('status-filter').addEventListener('change', updateRequestsList);
             document.getElementById('unit-filter').addEventListener('change', updateRequestsList);
+            document.getElementById('operator-status-filter').addEventListener('change', updateOperatorsList);
+            document.getElementById('operator-specialty-filter').addEventListener('change', updateOperatorsList);
+            document.getElementById('stats-period').addEventListener('change', updateStatistics);
             
             // Logout
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
@@ -1483,11 +1739,26 @@
             `;
         }
 
+        // Load all data from Firestore
+        async function loadAllData() {
+            try {
+                await Promise.all([
+                    loadRequestsFromFirestore(),
+                    loadOperatorsFromFirestore()
+                ]);
+                
+                updateStatistics();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                loadSampleData();
+            }
+        }
+
         // Load requests from Firestore
         async function loadRequestsFromFirestore() {
             try {
                 document.getElementById('data-loading').style.display = 'block';
-                document.getElementById('requests-table').style.display = 'none';
                 
                 const querySnapshot = await db.collection('requests')
                     .orderBy('createdAt', 'desc')
@@ -1508,9 +1779,106 @@
                 
             } catch (error) {
                 console.error('Error loading requests:', error);
+                throw error;
+            }
+        }
+
+        // Load operators from Firestore
+        async function loadOperatorsFromFirestore() {
+            try {
+                document.getElementById('operators-loading').style.display = 'block';
                 
-                // Load sample data if Firestore fails
-                loadSampleData();
+                const querySnapshot = await db.collection('operators')
+                    .orderBy('name')
+                    .get();
+                
+                operators = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    operators.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+                
+                // If no operators in Firestore, add sample operators
+                if (operators.length === 0) {
+                    await addSampleOperators();
+                    await loadOperatorsFromFirestore(); // Reload after adding samples
+                } else {
+                    updateOperatorsList();
+                    updateOperatorDropdown();
+                    document.getElementById('operators-loading').style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('Error loading operators:', error);
+                throw error;
+            }
+        }
+
+        // Add sample operators to Firestore
+        async function addSampleOperators() {
+            const sampleOperators = [
+                {
+                    name: "Ahmet Yılmaz",
+                    email: "ahmet.yilmaz@firma.com",
+                    phone: "0532 123 45 67",
+                    specialty: "Kaynak",
+                    experience: 5,
+                    status: "aktif",
+                    notes: "Kaynak uzmanı, özel projelerde görev alabilir.",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                },
+                {
+                    name: "Mehmet Demir",
+                    email: "mehmet.demir@firma.com",
+                    phone: "0533 234 56 78",
+                    specialty: "Talaşlı İmalat",
+                    experience: 3,
+                    status: "aktif",
+                    notes: "CNC operatörü, hassas işlerde başarılı.",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                },
+                {
+                    name: "Ayşe Kaya",
+                    email: "ayse.kaya@firma.com",
+                    phone: "0534 345 67 89",
+                    specialty: "Montaj",
+                    experience: 4,
+                    status: "aktif",
+                    notes: "Montaj hattı sorumlusu.",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                },
+                {
+                    name: "Mustafa Şahin",
+                    email: "mustafa.sahin@firma.com",
+                    phone: "0535 456 78 90",
+                    specialty: "Kaynak",
+                    experience: 2,
+                    status: "aktif",
+                    notes: "Yeni operatör, eğitim sürecinde.",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                },
+                {
+                    name: "Zeynep Arslan",
+                    email: "zeynep.arslan@firma.com",
+                    phone: "0536 567 89 01",
+                    specialty: "Kalite Kontrol",
+                    experience: 6,
+                    status: "aktif",
+                    notes: "Kalite kontrol uzmanı, ISO standartları konusunda yetkin.",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }
+            ];
+            
+            try {
+                for (const operator of sampleOperators) {
+                    await db.collection('operators').add(operator);
+                }
+                console.log('Sample operators added to Firestore');
+            } catch (error) {
+                console.error('Error adding sample operators:', error);
             }
         }
 
@@ -1546,57 +1914,38 @@
                     completionDate: null,
                     urgency: "normal",
                     createdAt: new Date().toISOString()
+                }
+            ];
+            
+            operators = [
+                {
+                    id: '1',
+                    name: "Ahmet Yılmaz",
+                    email: "ahmet.yilmaz@firma.com",
+                    phone: "0532 123 45 67",
+                    specialty: "Kaynak",
+                    experience: 5,
+                    status: "aktif",
+                    notes: "Kaynak uzmanı"
                 },
                 {
-                    id: '3',
-                    requestNumber: 1003,
-                    unit: "Bakım",
-                    date: "2023-10-12",
-                    description: "Pres makinesi yağ kaçağı onarımı",
-                    status: "inprogress",
-                    operator: "Mehmet Demir",
-                    estimatedDays: 5,
-                    actualDays: null,
-                    startDate: "2023-10-13",
-                    completionDate: null,
-                    urgency: "acil",
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: '4',
-                    requestNumber: 1004,
-                    unit: "Depo",
-                    date: "2023-10-10",
-                    description: "Raf kaynak işlemi",
-                    status: "inprogress",
-                    operator: "Mustafa Şahin",
-                    estimatedDays: 4,
-                    actualDays: null,
-                    startDate: "2023-10-11",
-                    completionDate: null,
-                    urgency: "normal",
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: '5',
-                    requestNumber: 1005,
-                    unit: "İdari İşler",
-                    date: "2023-10-08",
-                    description: "Ofis kapı menteşesi kaynağı",
-                    status: "completed",
-                    operator: "Ayşe Kaya",
-                    estimatedDays: 1,
-                    actualDays: 2,
-                    startDate: "2023-10-09",
-                    completionDate: "2023-10-11",
-                    urgency: "normal",
-                    createdAt: new Date().toISOString()
+                    id: '2',
+                    name: "Mehmet Demir",
+                    email: "mehmet.demir@firma.com",
+                    phone: "0533 234 56 78",
+                    specialty: "Talaşlı İmalat",
+                    experience: 3,
+                    status: "aktif",
+                    notes: "CNC operatörü"
                 }
             ];
             
             updateRequestsList();
+            updateOperatorsList();
+            updateOperatorDropdown();
             document.getElementById('data-loading').style.display = 'none';
             document.getElementById('requests-table').style.display = 'table';
+            document.getElementById('operators-loading').style.display = 'none';
         }
 
         // Update requests list
@@ -1619,7 +1968,7 @@
             }
             
             filteredRequests.forEach(request => {
-                const status = statusLabels[request.status] || statusLabels['new'];
+                const status = getStatusInfo(request.status);
                 const row = document.createElement('tr');
                 
                 // Determine action buttons based on status
@@ -1648,8 +1997,8 @@
                     }
                     
                     actionButtons = `
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <span><strong>${daysPassed} gündür devam ediyor</strong></span>
+                        <div class="action-buttons">
+                            <span><strong>${daysPassed} gün</strong></span>
                             <button class="btn btn-success btn-sm complete-job" data-id="${request.id}">
                                 <i class="fas fa-check"></i> Tamamla
                             </button>
@@ -1657,9 +2006,9 @@
                     `;
                 } else if (request.status === 'completed') {
                     actionButtons = `
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <span><strong>${request.actualDays} günde tamamlandı</strong></span>
-                            <span>Tahmin: ${request.estimatedDays} gün</span>
+                        <div>
+                            <span><strong>${request.actualDays} gün</strong></span>
+                            <div style="font-size: 0.85rem; color: #666;">Tahmin: ${request.estimatedDays} gün</div>
                         </div>
                     `;
                 }
@@ -1697,6 +2046,115 @@
             });
         }
 
+        // Update operators list
+        function updateOperatorsList() {
+            const operatorsList = document.getElementById('operators-list');
+            operatorsList.innerHTML = '';
+            
+            // Apply filters
+            const statusFilter = document.getElementById('operator-status-filter').value;
+            const specialtyFilter = document.getElementById('operator-specialty-filter').value;
+            
+            let filteredOperators = operators;
+            
+            if (statusFilter !== 'all') {
+                filteredOperators = filteredOperators.filter(op => op.status === statusFilter);
+            }
+            
+            if (specialtyFilter !== 'all') {
+                filteredOperators = filteredOperators.filter(op => op.specialty === specialtyFilter);
+            }
+            
+            // Calculate statistics for each operator
+            filteredOperators.forEach(operator => {
+                const operatorRequests = requests.filter(req => req.operator === operator.name);
+                const completedRequests = operatorRequests.filter(req => req.status === 'completed').length;
+                const inProgressRequests = operatorRequests.filter(req => req.status === 'inprogress').length;
+                
+                const operatorCard = document.createElement('div');
+                operatorCard.className = 'operator-card';
+                operatorCard.innerHTML = `
+                    <div class="operator-info">
+                        <h4>${operator.name}</h4>
+                        <p><i class="fas fa-briefcase"></i> ${operator.specialty} | <i class="fas fa-star"></i> ${operator.experience || 0} yıl deneyim</p>
+                        <p><i class="fas fa-envelope"></i> ${operator.email || 'E-posta yok'} | <i class="fas fa-phone"></i> ${operator.phone || 'Telefon yok'}</p>
+                        <div class="operator-stats">
+                            <div class="operator-stat">
+                                <div class="operator-stat-value">${operatorRequests.length}</div>
+                                <div class="operator-stat-label">Toplam İş</div>
+                            </div>
+                            <div class="operator-stat">
+                                <div class="operator-stat-value">${completedRequests}</div>
+                                <div class="operator-stat-label">Tamamlanan</div>
+                            </div>
+                            <div class="operator-stat">
+                                <div class="operator-stat-value">${inProgressRequests}</div>
+                                <div class="operator-stat-label">Devam Eden</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <span class="operator-status ${operator.status === 'aktif' ? 'operator-active' : 'operator-inactive'}">
+                            ${operator.status === 'aktif' ? 'Aktif' : 'Pasif'}
+                        </span>
+                        <button class="btn btn-warning btn-sm edit-operator" data-id="${operator.id}">
+                            <i class="fas fa-edit"></i> Düzenle
+                        </button>
+                        <button class="btn btn-danger btn-sm delete-operator" data-id="${operator.id}" data-name="${operator.name}">
+                            <i class="fas fa-trash"></i> Sil
+                        </button>
+                    </div>
+                `;
+                
+                operatorsList.appendChild(operatorCard);
+            });
+            
+            // Update operator count in stats
+            document.getElementById('total-operators').textContent = operators.filter(op => op.status === 'aktif').length;
+            
+            // Add event listeners to operator buttons
+            document.querySelectorAll('.edit-operator').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const operatorId = this.getAttribute('data-id');
+                    openEditOperatorModal(operatorId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-operator').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const operatorId = this.getAttribute('data-id');
+                    const operatorName = this.getAttribute('data-name');
+                    openDeleteModal(operatorId, 'operator', operatorName);
+                });
+            });
+        }
+
+        // Update operator dropdown
+        function updateOperatorDropdown() {
+            const dropdown = document.getElementById('start-job-operator');
+            dropdown.innerHTML = '<option value="">Operatör Seçiniz</option>';
+            
+            const activeOperators = operators.filter(op => op.status === 'aktif');
+            activeOperators.forEach(operator => {
+                const option = document.createElement('option');
+                option.value = operator.name;
+                option.textContent = `${operator.name} (${operator.specialty})`;
+                dropdown.appendChild(option);
+            });
+        }
+
+        // Get status info
+        function getStatusInfo(status) {
+            const statusMap = {
+                "new": { text: "Yeni Talep", class: "status-new" },
+                "assigned": { text: "Operatör Atandı", class: "status-assigned" },
+                "inprogress": { text: "Devam Ediyor", class: "status-inprogress" },
+                "completed": { text: "Tamamlandı", class: "status-completed" }
+            };
+            
+            return statusMap[status] || statusMap['new'];
+        }
+
         // Format date
         function formatDate(dateStr) {
             if (!dateStr) return '-';
@@ -1715,6 +2173,7 @@
             const pendingRequests = requests.filter(req => req.status === 'new').length;
             const inprogressRequests = requests.filter(req => req.status === 'inprogress').length;
             const completedRequests = requests.filter(req => req.status === 'completed').length;
+            const activeOperators = operators.filter(op => op.status === 'aktif').length;
             
             // Calculate average completion time
             const completedTasks = requests.filter(req => req.status === 'completed');
@@ -1726,7 +2185,117 @@
             document.getElementById('pending-requests').textContent = pendingRequests;
             document.getElementById('inprogress-requests').textContent = inprogressRequests;
             document.getElementById('completed-tasks').textContent = completedRequests;
+            document.getElementById('total-operators').textContent = activeOperators;
             document.getElementById('avg-completion-time').textContent = avgCompletionTime;
+        }
+
+        // Update detailed statistics
+        function updateStatistics() {
+            const period = document.getElementById('stats-period').value;
+            const now = new Date();
+            let startDate;
+            
+            switch (period) {
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'quarter':
+                    const quarter = Math.floor(now.getMonth() / 3);
+                    startDate = new Date(now.getFullYear(), quarter * 3, 1);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    break;
+                default:
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            }
+            
+            // Filter requests by period
+            const periodRequests = requests.filter(req => {
+                const reqDate = new Date(req.createdAt || req.date);
+                return reqDate >= startDate;
+            });
+            
+            // Calculate statistics
+            const totalJobs = periodRequests.length;
+            const completedJobs = periodRequests.filter(req => req.status === 'completed').length;
+            const completionRate = totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0;
+            
+            // Calculate delayed jobs (inprogress and past estimated completion)
+            const delayedJobs = periodRequests.filter(req => {
+                if (req.status !== 'inprogress' || !req.startDate || !req.estimatedDays) return false;
+                
+                const start = new Date(req.startDate);
+                const estimatedEnd = new Date(start.getTime() + req.estimatedDays * 24 * 60 * 60 * 1000);
+                return estimatedEnd < now;
+            }).length;
+            
+            // Find top operator
+            const operatorStats = {};
+            periodRequests.forEach(req => {
+                if (req.operator && req.status === 'completed') {
+                    operatorStats[req.operator] = (operatorStats[req.operator] || 0) + 1;
+                }
+            });
+            
+            let topOperator = '-';
+            let maxJobs = 0;
+            for (const [operator, count] of Object.entries(operatorStats)) {
+                if (count > maxJobs) {
+                    maxJobs = count;
+                    topOperator = operator;
+                }
+            }
+            
+            // Calculate unit statistics
+            const unitStats = {};
+            periodRequests.forEach(req => {
+                if (!unitStats[req.unit]) {
+                    unitStats[req.unit] = {
+                        total: 0,
+                        completed: 0,
+                        inprogress: 0,
+                        totalDays: 0,
+                        count: 0
+                    };
+                }
+                
+                unitStats[req.unit].total++;
+                if (req.status === 'completed') {
+                    unitStats[req.unit].completed++;
+                    unitStats[req.unit].totalDays += (req.actualDays || 0);
+                    unitStats[req.unit].count++;
+                } else if (req.status === 'inprogress') {
+                    unitStats[req.unit].inprogress++;
+                }
+            });
+            
+            // Update stats cards
+            document.getElementById('stats-total-jobs').textContent = totalJobs;
+            document.getElementById('stats-completion-rate').textContent = `${completionRate}%`;
+            document.getElementById('stats-delayed-jobs').textContent = delayedJobs;
+            document.getElementById('stats-top-operator').textContent = topOperator;
+            
+            // Update unit statistics table
+            const unitStatsList = document.getElementById('unit-stats-list');
+            unitStatsList.innerHTML = '';
+            
+            for (const [unit, stats] of Object.entries(unitStats)) {
+                const avgDays = stats.count > 0 ? (stats.totalDays / stats.count).toFixed(1) : '0.0';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${unit}</td>
+                    <td>${stats.total}</td>
+                    <td>${stats.completed}</td>
+                    <td>${stats.inprogress}</td>
+                    <td>${avgDays}</td>
+                `;
+                unitStatsList.appendChild(row);
+            }
         }
 
         // Open add request modal
@@ -1736,6 +2305,35 @@
             document.getElementById('request-form').reset();
             document.getElementById('request-id').value = '';
             document.getElementById('request-modal').style.display = 'flex';
+        }
+
+        // Open add operator modal
+        function openAddOperatorModal() {
+            document.getElementById('operator-modal-title').textContent = 'Yeni Operatör Ekle';
+            document.getElementById('operator-modal-submit-btn').textContent = 'Operatör Ekle';
+            document.getElementById('operator-form').reset();
+            document.getElementById('operator-id').value = '';
+            document.getElementById('operator-modal').style.display = 'flex';
+        }
+
+        // Open edit operator modal
+        function openEditOperatorModal(operatorId) {
+            const operator = operators.find(op => op.id === operatorId);
+            if (!operator) return;
+            
+            document.getElementById('operator-modal-title').textContent = 'Operatör Düzenle';
+            document.getElementById('operator-modal-submit-btn').textContent = 'Güncelle';
+            
+            document.getElementById('operator-name').value = operator.name || '';
+            document.getElementById('operator-email').value = operator.email || '';
+            document.getElementById('operator-phone').value = operator.phone || '';
+            document.getElementById('operator-specialty').value = operator.specialty || '';
+            document.getElementById('operator-experience').value = operator.experience || 1;
+            document.getElementById('operator-status').value = operator.status || 'aktif';
+            document.getElementById('operator-notes').value = operator.notes || '';
+            document.getElementById('operator-id').value = operatorId;
+            
+            document.getElementById('operator-modal').style.display = 'flex';
         }
 
         // Open start job modal
@@ -1762,6 +2360,27 @@
             }
             
             document.getElementById('complete-job-modal').style.display = 'flex';
+        }
+
+        // Open delete confirmation modal
+        function openDeleteModal(itemId, type, itemName) {
+            document.getElementById('delete-id').value = itemId;
+            document.getElementById('delete-type').value = type;
+            
+            let message = '';
+            let title = '';
+            
+            if (type === 'operator') {
+                title = 'Operatör Silme Onayı';
+                message = `"${itemName}" operatörünü silmek istediğinizden emin misiniz? Bu operatöre atanmış işler varsa, bu işler operatörsüz kalacaktır.`;
+            } else if (type === 'request') {
+                title = 'Talep Silme Onayı';
+                message = `Bu talebi (No: ${itemId}) silmek istediğinizden emin misiniz?`;
+            }
+            
+            document.getElementById('delete-modal-title').textContent = title;
+            document.getElementById('delete-message').textContent = message;
+            document.getElementById('delete-modal').style.display = 'flex';
         }
 
         // Close all modals
@@ -1822,6 +2441,61 @@
             } catch (error) {
                 console.error('Error adding request:', error);
                 showError('Talep eklenirken bir hata oluştu.');
+            }
+        }
+
+        // Handle operator submit (add/edit)
+        async function handleOperatorSubmit(e) {
+            e.preventDefault();
+            
+            const operatorId = document.getElementById('operator-id').value;
+            const name = document.getElementById('operator-name').value;
+            const email = document.getElementById('operator-email').value;
+            const phone = document.getElementById('operator-phone').value;
+            const specialty = document.getElementById('operator-specialty').value;
+            const experience = parseInt(document.getElementById('operator-experience').value) || 0;
+            const status = document.getElementById('operator-status').value;
+            const notes = document.getElementById('operator-notes').value;
+            
+            if (!name || !specialty) {
+                showError('Lütfen zorunlu alanları doldurun (Ad, Uzmanlık).');
+                return;
+            }
+            
+            try {
+                const operatorData = {
+                    name,
+                    email,
+                    phone,
+                    specialty,
+                    experience,
+                    status,
+                    notes,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Add createdBy and createdAt for new operators
+                if (!operatorId) {
+                    operatorData.createdBy = currentUser.email;
+                    operatorData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+                
+                if (operatorId) {
+                    // Update existing operator
+                    await db.collection('operators').doc(operatorId).update(operatorData);
+                    showSuccess('Operatör başarıyla güncellendi!');
+                } else {
+                    // Add new operator
+                    await db.collection('operators').add(operatorData);
+                    showSuccess('Operatör başarıyla eklendi!');
+                }
+                
+                closeAllModals();
+                loadOperatorsFromFirestore();
+                
+            } catch (error) {
+                console.error('Error saving operator:', error);
+                showError('Operatör kaydedilirken bir hata oluştu.');
             }
         }
 
@@ -1895,6 +2569,35 @@
             }
         }
 
+        // Handle delete
+        async function handleDelete() {
+            const itemId = document.getElementById('delete-id').value;
+            const type = document.getElementById('delete-type').value;
+            
+            try {
+                if (type === 'operator') {
+                    await db.collection('operators').doc(itemId).delete();
+                    showSuccess('Operatör başarıyla silindi!');
+                } else if (type === 'request') {
+                    await db.collection('requests').doc(itemId).delete();
+                    showSuccess('Talep başarıyla silindi!');
+                }
+                
+                closeAllModals();
+                
+                // Reload data
+                if (type === 'operator') {
+                    loadOperatorsFromFirestore();
+                } else if (type === 'request') {
+                    loadRequestsFromFirestore();
+                }
+                
+            } catch (error) {
+                console.error('Error deleting item:', error);
+                showError('Silme işlemi sırasında bir hata oluştu.');
+            }
+        }
+
         // Menu navigation functions
         function showDashboard() {
             setActiveMenu('menu-dashboard');
@@ -1918,8 +2621,6 @@
             document.getElementById('requests-content').style.display = 'none';
             document.getElementById('operators-content').style.display = 'block';
             document.getElementById('stats-content').style.display = 'none';
-            
-            // TODO: Load operators content
         }
         
         function showStats() {
@@ -1929,7 +2630,7 @@
             document.getElementById('operators-content').style.display = 'none';
             document.getElementById('stats-content').style.display = 'block';
             
-            // TODO: Load statistics content
+            updateStatistics();
         }
         
         function setActiveMenu(menuId) {
