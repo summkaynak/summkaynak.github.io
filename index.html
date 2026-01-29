@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÜMM Ekip - Talep Yönetim Sistemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Stilleri */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 10px 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+        }
+        
+        .logo span {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 50px;
+        }
+        
+        /* Ana İçerik */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Yan Menü */
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+        }
+        
+        .sidebar h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 10px;
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #555;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a:hover, .menu-item a.active {
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+        }
+        
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* İstatistik Kartları */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+        
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Talep Yönetimi Alanı */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .section-header h2 {
+            color: var(--primary-color);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        /* Talep Listesi */
+        .requests-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--light-color);
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* Durum Etiketleri */
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-new {
+            background-color: #e3f2fd;
+            color: var(--secondary-color);
+        }
+        
+        .status-assigned {
+            background-color: #fff3e0;
+            color: var(--warning-color);
+        }
+        
+        .status-inprogress {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+        
+        .status-completed {
+            background-color: #f1f8e9;
+            color: #689f38;
+        }
+        
+        /* Operatör Atama */
+        .assign-operator {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .assign-operator select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        
+        .assign-operator .btn {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            color: var(--primary-color);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Mobil Uyumluluk */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+                font-size: 0.9rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        /* Filtreleme */
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .filter-group select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background-color: white;
+            min-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-tools"></i>
+                <div>
+                    <h1>ÜMM Ekip Talep Yönetimi</h1>
+                    <span>Kaynak Atölyesi İş Takip Sistemi</span>
+                </div>
+            </div>
+            <div class="header-info">
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <div class="user-name">Atölye Sorumlusu</div>
+                        <div class="user-role">Yönetici</div>
+                    </div>
+                </div>
+                <div id="current-date" class="current-date">
+                    <!-- JS ile doldurulacak -->
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="dashboard">
+            <aside class="sidebar">
+                <h3>Menü</h3>
+                <ul class="menu">
+                    <li class="menu-item"><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Ana Sayfa</a></li>
+                    <li class="menu-item"><a href="#"><i class="fas fa-list"></i> Tüm Talepler</a></li>
+                    <li class="menu-item"><a href="#"><i class="fas fa-user-plus"></i> Operatörler</a></li>
+                    <li class="menu-item"><a href="#"><i class="fas fa-chart-bar"></i> İstatistikler</a></li>
+                    <li class="menu-item"><a href="#"><i class="fas fa-cog"></i> Ayarlar</a></li>
+                </ul>
+                
+                <div style="margin-top: 30px;">
+                    <h3>Sistem İstatistikleri</h3>
+                    <div class="stats-cards" style="grid-template-columns: 1fr;">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--secondary-color);">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="avg-completion-time">2.3</h3>
+                                <p>Ort. Tamamlanma Süresi (gün)</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--success-color);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="completed-tasks">12</h3>
+                                <p>Bu Ay Tamamlanan İş</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <main class="main-content">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--secondary-color);">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-requests">8</h3>
+                            <p>Toplam Talep</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning-color);">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pending-requests">3</h3>
+                            <p>Bekleyen Talep</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success-color);">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="inprogress-requests">4</h3>
+                            <p>Devam Eden İş</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #9b59b6;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-operators">5</h3>
+                            <p>Operatör Sayısı</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="requests-container">
+                    <div class="section-header">
+                        <h2><i class="fas fa-list-alt"></i> Aktif Talepler</h2>
+                        <div class="filters">
+                            <div class="filter-group">
+                                <label for="status-filter">Durum</label>
+                                <select id="status-filter">
+                                    <option value="all">Tümü</option>
+                                    <option value="new">Yeni</option>
+                                    <option value="assigned">Atanmış</option>
+                                    <option value="inprogress">Devam Ediyor</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="unit-filter">Birim</label>
+                                <select id="unit-filter">
+                                    <option value="all">Tümü</option>
+                                    <option value="uretim">Üretim</option>
+                                    <option value="kalite">Kalite</option>
+                                    <option value="bakim">Bakım</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" id="add-request-btn">
+                                <i class="fas fa-plus"></i> Yeni Talep Ekle
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="requests-table">
+                            <thead>
+                                <tr>
+                                    <th>Talep No</th>
+                                    <th>Talep Eden Birim</th>
+                                    <th>Talep Tarihi</th>
+                                    <th>Açıklama</th>
+                                    <th>Durum</th>
+                                    <th>Operatör</th>
+                                    <th>Tahmini Süre (gün)</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requests-list">
+                                <!-- Talepler buraya dinamik olarak eklenecek -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Talep Ekleme/Değiştirme Modal -->
+    <div id="request-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Yeni Talep Ekle</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="request-form">
+                    <div class="form-group">
+                        <label for="request-unit">Talep Eden Birim</label>
+                        <select id="request-unit" required>
+                            <option value="">Birim Seçiniz</option>
+                            <option value="uretim">Üretim</option>
+                            <option value="kalite">Kalite Kontrol</option>
+                            <option value="bakim">Bakım Onarım</option>
+                            <option value="depo">Depo</option>
+                            <option value="idari">İdari İşler</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="request-description">Talep Açıklaması</label>
+                        <textarea id="request-description" placeholder="Talep detaylarını buraya yazın..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="request-urgency">Aciliyet Durumu</label>
+                        <select id="request-urgency" required>
+                            <option value="normal">Normal</option>
+                            <option value="yuksek">Yüksek</option>
+                            <option value="acil">Acil</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="request-estimated">Tahmini Tamamlanma Süresi (gün)</label>
+                        <input type="number" id="request-estimated" min="1" max="30" value="3" required>
+                    </div>
+                    
+                    <input type="hidden" id="request-id" value="">
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                        <button type="button" class="btn close-modal">İptal</button>
+                        <button type="submit" class="btn btn-primary" id="modal-submit-btn">Talep Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- İş Başlatma Modal -->
+    <div id="start-job-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>İşi Başlat</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="start-job-operator">Operatör Ataması</label>
+                    <select id="start-job-operator">
+                        <option value="">Operatör Seçiniz</option>
+                        <option value="operator1">Ahmet Yılmaz (Kaynak Uzmanı)</option>
+                        <option value="operator2">Mehmet Demir (Talaşlı İmalat)</option>
+                        <option value="operator3">Ayşe Kaya (Montaj)</option>
+                        <option value="operator4">Mustafa Şahin (Kaynak)</option>
+                        <option value="operator5">Zeynep Arslan (Kalite Kontrol)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="start-job-notes">İş Notları (Opsiyonel)</label>
+                    <textarea id="start-job-notes" placeholder="İş ile ilgili notlar..."></textarea>
+                </div>
+                <input type="hidden" id="start-job-id" value="">
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                    <button type="button" class="btn close-modal">İptal</button>
+                    <button type="button" class="btn btn-success" id="confirm-start-job">İşi Başlat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- İş Tamamlama Modal -->
+    <div id="complete-job-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>İşi Tamamla</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="actual-days">Gerçekleşen Tamamlanma Süresi (gün)</label>
+                    <input type="number" id="actual-days" min="1" max="30" required>
+                </div>
+                <div class="form-group">
+                    <label for="completion-notes">Tamamlama Notları</label>
+                    <textarea id="completion-notes" placeholder="İş tamamlama detayları..."></textarea>
+                </div>
+                <input type="hidden" id="complete-job-id" value="">
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                    <button type="button" class="btn close-modal">İptal</button>
+                    <button type="button" class="btn btn-success" id="confirm-complete-job">İşi Tamamla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>ÜMM Ekip Talep Yönetim Sistemi &copy; <span id="current-year"></span> - Tüm hakları saklıdır.</p>
+            <p style="font-size: 0.9rem; margin-top: 5px;">Mobil uyumlu, anlık talep takibi ve operatör yönetimi</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tarih ve saat güncelleme
+        function updateDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('tr-TR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const timeStr = now.toLocaleTimeString('tr-TR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            document.getElementById('current-date').innerHTML = `
+                <div>${dateStr}</div>
+                <div>${timeStr}</div>
+            `;
+        }
+        
+        // İlk tarih güncellemesi
+        updateDateTime();
+        // Her dakika tarihi güncelle
+        setInterval(updateDateTime, 60000);
+        
+        // Yıl bilgisi
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Örnek talep verileri
+        let requests = [
+            {
+                id: 1001,
+                unit: "Üretim",
+                date: "2023-10-15",
+                description: "Kaynak makinesi contası değişimi",
+                status: "new",
+                operator: "",
+                estimatedDays: 2,
+                actualDays: null,
+                startDate: null,
+                completionDate: null,
+                urgency: "yuksek"
+            },
+            {
+                id: 1002,
+                unit: "Kalite",
+                date: "2023-10-14",
+                description: "Ölçüm aleti kalibrasyonu",
+                status: "assigned",
+                operator: "Ahmet Yılmaz",
+                estimatedDays: 3,
+                actualDays: null,
+                startDate: "2023-10-15",
+                completionDate: null,
+                urgency: "normal"
+            },
+            {
+                id: 1003,
+                unit: "Bakım",
+                date: "2023-10-12",
+                description: "Pres makinesi yağ kaçağı onarımı",
+                status: "inprogress",
+                operator: "Mehmet Demir",
+                estimatedDays: 5,
+                actualDays: null,
+                startDate: "2023-10-13",
+                completionDate: null,
+                urgency: "acil"
+            },
+            {
+                id: 1004,
+                unit: "Depo",
+                date: "2023-10-10",
+                description: "Raf kaynak işlemi",
+                status: "inprogress",
+                operator: "Mustafa Şahin",
+                estimatedDays: 4,
+                actualDays: null,
+                startDate: "2023-10-11",
+                completionDate: null,
+                urgency: "normal"
+            },
+            {
+                id: 1005,
+                unit: "İdari İşler",
+                date: "2023-10-08",
+                description: "Ofis kapı menteşesi kaynağı",
+                status: "completed",
+                operator: "Ayşe Kaya",
+                estimatedDays: 1,
+                actualDays: 2,
+                startDate: "2023-10-09",
+                completionDate: "2023-10-11",
+                urgency: "normal"
+            },
+            {
+                id: 1006,
+                unit: "Üretim",
+                date: "2023-10-07",
+                description: "Konveyör bant kaynak tamiri",
+                status: "completed",
+                operator: "Ahmet Yılmaz",
+                estimatedDays: 3,
+                actualDays: 3,
+                startDate: "2023-10-08",
+                completionDate: "2023-10-11",
+                urgency: "yuksek"
+            },
+            {
+                id: 1007,
+                unit: "Kalite",
+                date: "2023-10-06",
+                description: "Numune parça üretimi",
+                status: "inprogress",
+                operator: "Zeynep Arslan",
+                estimatedDays: 6,
+                actualDays: null,
+                startDate: "2023-10-07",
+                completionDate: null,
+                urgency: "normal"
+            },
+            {
+                id: 1008,
+                unit: "Bakım",
+                date: "2023-10-05",
+                description: "Havalandırma sistemi kaynağı",
+                status: "assigned",
+                operator: "Mustafa Şahin",
+                estimatedDays: 4,
+                actualDays: null,
+                startDate: null,
+                completionDate: null,
+                urgency: "normal"
+            }
+        ];
+        
+        // Operatör listesi
+        const operators = [
+            { id: "operator1", name: "Ahmet Yılmaz", specialty: "Kaynak Uzmanı" },
+            { id: "operator2", name: "Mehmet Demir", specialty: "Talaşlı İmalat" },
+            { id: "operator3", name: "Ayşe Kaya", specialty: "Montaj" },
+            { id: "operator4", name: "Mustafa Şahin", specialty: "Kaynak" },
+            { id: "operator5", name: "Zeynep Arslan", specialty: "Kalite Kontrol" }
+        ];
+        
+        // Durum etiketleri
+        const statusLabels = {
+            "new": { text: "Yeni Talep", class: "status-new" },
+            "assigned": { text: "Operatör Atandı", class: "status-assigned" },
+            "inprogress": { text: "Devam Ediyor", class: "status-inprogress" },
+            "completed": { text: "Tamamlandı", class: "status-completed" }
+        };
+        
+        // Talep listesini güncelle
+        function updateRequestsList() {
+            const tbody = document.getElementById('requests-list');
+            tbody.innerHTML = '';
+            
+            // Filtreleme
+            const statusFilter = document.getElementById('status-filter').value;
+            const unitFilter = document.getElementById('unit-filter').value;
+            
+            let filteredRequests = requests;
+            
+            if (statusFilter !== 'all') {
+                filteredRequests = filteredRequests.filter(req => req.status === statusFilter);
+            }
+            
+            if (unitFilter !== 'all') {
+                filteredRequests = filteredRequests.filter(req => {
+                    const unitMapping = {
+                        'uretim': 'Üretim',
+                        'kalite': 'Kalite',
+                        'bakim': 'Bakım'
+                    };
+                    return req.unit === unitMapping[unitFilter];
+                });
+            }
+            
+            // Yeni taleplerin üstte görünmesi için ters sıralama
+            filteredRequests.sort((a, b) => b.id - a.id);
+            
+            filteredRequests.forEach(request => {
+                const status = statusLabels[request.status];
+                const row = document.createElement('tr');
+                
+                // İşlem butonlarını duruma göre belirle
+                let actionButtons = '';
+                
+                if (request.status === 'new') {
+                    actionButtons = `
+                        <button class="btn btn-primary btn-sm start-job" data-id="${request.id}">
+                            <i class="fas fa-play"></i> Başlat
+                        </button>
+                    `;
+                } else if (request.status === 'assigned') {
+                    actionButtons = `
+                        <button class="btn btn-success btn-sm start-job" data-id="${request.id}">
+                            <i class="fas fa-play"></i> İşe Başla
+                        </button>
+                    `;
+                } else if (request.status === 'inprogress') {
+                    // İş devam ediyorsa tamamlanma süresini hesapla
+                    let daysPassed = 0;
+                    if (request.startDate) {
+                        const start = new Date(request.startDate);
+                        const now = new Date();
+                        const diffTime = Math.abs(now - start);
+                        daysPassed = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    }
+                    
+                    actionButtons = `
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <span><strong>${daysPassed} gündür devam ediyor</strong></span>
+                            <button class="btn btn-success btn-sm complete-job" data-id="${request.id}">
+                                <i class="fas fa-check"></i> Tamamla
+                            </button>
+                        </div>
+                    `;
+                } else if (request.status === 'completed') {
+                    actionButtons = `
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <span><strong>${request.actualDays} günde tamamlandı</strong></span>
+                            <span>Tahmin: ${request.estimatedDays} gün</span>
+                        </div>
+                    `;
+                }
+                
+                row.innerHTML = `
+                    <td>${request.id}</td>
+                    <td>${request.unit}</td>
+                    <td>${formatDate(request.date)}</td>
+                    <td>${request.description}</td>
+                    <td><span class="status ${status.class}">${status.text}</span></td>
+                    <td>${request.operator || "-"}</td>
+                    <td>${request.estimatedDays}</td>
+                    <td>${actionButtons}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // İstatistikleri güncelle
+            updateStats();
+            
+            // Buton event listener'larını ekle
+            document.querySelectorAll('.start-job').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const requestId = parseInt(this.getAttribute('data-id'));
+                    openStartJobModal(requestId);
+                });
+            });
+            
+            document.querySelectorAll('.complete-job').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const requestId = parseInt(this.getAttribute('data-id'));
+                    openCompleteJobModal(requestId);
+                });
+            });
+        }
+        
+        // İstatistikleri güncelle
+        function updateStats() {
+            const totalRequests = requests.length;
+            const pendingRequests = requests.filter(req => req.status === 'new').length;
+            const inprogressRequests = requests.filter(req => req.status === 'inprogress').length;
+            const completedRequests = requests.filter(req => req.status === 'completed').length;
+            const totalOperators = operators.length;
+            
+            // Ortalama tamamlanma süresini hesapla
+            const completedTasks = requests.filter(req => req.status === 'completed');
+            const avgCompletionTime = completedTasks.length > 0 
+                ? (completedTasks.reduce((sum, req) => sum + req.actualDays, 0) / completedTasks.length).toFixed(1)
+                : "0.0";
+            
+            document.getElementById('total-requests').textContent = totalRequests;
+            document.getElementById('pending-requests').textContent = pendingRequests;
+            document.getElementById('inprogress-requests').textContent = inprogressRequests;
+            document.getElementById('total-operators').textContent = totalOperators;
+            document.getElementById('completed-tasks').textContent = completedRequests;
+            document.getElementById('avg-completion-time').textContent = avgCompletionTime;
+        }
+        
+        // Tarih formatı
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('tr-TR');
+        }
+        
+        // Modal işlemleri
+        const modals = document.querySelectorAll('.modal');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+        const addRequestBtn = document.getElementById('add-request-btn');
+        const requestModal = document.getElementById('request-modal');
+        const startJobModal = document.getElementById('start-job-modal');
+        const completeJobModal = document.getElementById('complete-job-modal');
+        
+        // Modal açma/kapama fonksiyonları
+        function openModal(modal) {
+            modal.style.display = 'flex';
+        }
+        
+        function closeAllModals() {
+            modals.forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+        
+        // Modal event listener'ları
+        closeModalButtons.forEach(btn => {
+            btn.addEventListener('click', closeAllModals);
+        });
+        
+        modals.forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAllModals();
+                }
+            });
+        });
+        
+        // Yeni talep ekleme
+        addRequestBtn.addEventListener('click', function() {
+            document.getElementById('modal-title').textContent = 'Yeni Talep Ekle';
+            document.getElementById('modal-submit-btn').textContent = 'Talep Ekle';
+            document.getElementById('request-form').reset();
+            document.getElementById('request-id').value = '';
+            openModal(requestModal);
+        });
+        
+        // Talep formu submit
+        document.getElementById('request-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const requestId = document.getElementById('request-id').value;
+            const unitSelect = document.getElementById('request-unit');
+            const unitText = unitSelect.options[unitSelect.selectedIndex].text;
+            const description = document.getElementById('request-description').value;
+            const estimatedDays = parseInt(document.getElementById('request-estimated').value);
+            const urgency = document.getElementById('request-urgency').value;
+            
+            if (requestId) {
+                // Talep güncelleme
+                const index = requests.findIndex(req => req.id == requestId);
+                if (index !== -1) {
+                    requests[index].unit = unitText;
+                    requests[index].description = description;
+                    requests[index].estimatedDays = estimatedDays;
+                    requests[index].urgency = urgency;
+                }
+            } else {
+                // Yeni talep ekleme
+                const newId = requests.length > 0 ? Math.max(...requests.map(req => req.id)) + 1 : 1001;
+                const newRequest = {
+                    id: newId,
+                    unit: unitText,
+                    date: new Date().toISOString().split('T')[0],
+                    description: description,
+                    status: "new",
+                    operator: "",
+                    estimatedDays: estimatedDays,
+                    actualDays: null,
+                    startDate: null,
+                    completionDate: null,
+                    urgency: urgency
+                };
+                
+                requests.unshift(newRequest);
+            }
+            
+            updateRequestsList();
+            closeAllModals();
+        });
+        
+        // İş başlatma modal'ını aç
+        function openStartJobModal(requestId) {
+            document.getElementById('start-job-id').value = requestId;
+            
+            // Talep bilgilerini doldur
+            const request = requests.find(req => req.id === requestId);
+            if (request) {
+                // Eğer talep zaten atanmışsa, operatör seçimini doldur
+                if (request.operator) {
+                    const operatorOption = Array.from(document.getElementById('start-job-operator').options)
+                        .find(opt => opt.text.includes(request.operator.split(' ')[0]));
+                    if (operatorOption) {
+                        document.getElementById('start-job-operator').value = operatorOption.value;
+                    }
+                }
+            }
+            
+            openModal(startJobModal);
+        }
+        
+        // İş başlatma onayı
+        document.getElementById('confirm-start-job').addEventListener('click', function() {
+            const requestId = parseInt(document.getElementById('start-job-id').value);
+            const operatorId = document.getElementById('start-job-operator').value;
+            const notes = document.getElementById('start-job-notes').value;
+            
+            if (!operatorId) {
+                alert('Lütfen bir operatör seçin!');
+                return;
+            }
+            
+            const operator = operators.find(op => op.id === operatorId);
+            if (!operator) return;
+            
+            // Talep durumunu güncelle
+            const requestIndex = requests.findIndex(req => req.id === requestId);
+            if (requestIndex !== -1) {
+                requests[requestIndex].operator = operator.name;
+                requests[requestIndex].status = requests[requestIndex].status === 'new' ? 'assigned' : 'inprogress';
+                
+                // İş başlatma tarihini ekle
+                if (!requests[requestIndex].startDate) {
+                    requests[requestIndex].startDate = new Date().toISOString().split('T')[0];
+                }
+                
+                // Notları ekle (gerçek uygulamada veritabanına kaydedilir)
+                if (notes) {
+                    console.log(`İş ${requestId} notu: ${notes}`);
+                }
+            }
+            
+            updateRequestsList();
+            closeAllModals();
+        });
+        
+        // İş tamamlama modal'ını aç
+        function openCompleteJobModal(requestId) {
+            document.getElementById('complete-job-id').value = requestId;
+            
+            // Talep bilgilerini doldur
+            const request = requests.find(req => req.id === requestId);
+            if (request) {
+                document.getElementById('actual-days').value = request.estimatedDays;
+            }
+            
+            openModal(completeJobModal);
+        }
+        
+        // İş tamamlama onayı
+        document.getElementById('confirm-complete-job').addEventListener('click', function() {
+            const requestId = parseInt(document.getElementById('complete-job-id').value);
+            const actualDays = parseInt(document.getElementById('actual-days').value);
+            const notes = document.getElementById('completion-notes').value;
+            
+            if (!actualDays || actualDays < 1) {
+                alert('Lütfen geçerli bir tamamlanma süresi girin!');
+                return;
+            }
+            
+            // Talep durumunu güncelle
+            const requestIndex = requests.findIndex(req => req.id === requestId);
+            if (requestIndex !== -1) {
+                requests[requestIndex].status = 'completed';
+                requests[requestIndex].actualDays = actualDays;
+                requests[requestIndex].completionDate = new Date().toISOString().split('T')[0];
+                
+                // Notları ekle (gerçek uygulamada veritabanına kaydedilir)
+                if (notes) {
+                    console.log(`İş ${requestId} tamamlama notu: ${notes}`);
+                }
+            }
+            
+            updateRequestsList();
+            closeAllModals();
+        });
+        
+        // Filtreleme event listener'ları
+        document.getElementById('status-filter').addEventListener('change', updateRequestsList);
+        document.getElementById('unit-filter').addEventListener('change', updateRequestsList);
+        
+        // Sayfa yüklendiğinde talepleri listele
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRequestsList();
+        });
+    </script>
+</body>
+</html>
