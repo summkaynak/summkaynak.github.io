@@ -5,6 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ÜMM Ekip - Talep Yönetim Sistemi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK v9 (modüler) -->
+    <script type="module">
+        // Firebase modülleri
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { 
+            getFirestore,
+            collection,
+            addDoc,
+            getDocs,
+            updateDoc,
+            doc,
+            query,
+            where,
+            orderBy,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // Firebase yapılandırmanız
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4QHRHk4tQWqRHkGJkD6vRqzibxwjHDaQ",
+            authDomain: "kaynak-cf02a.firebaseapp.com",
+            projectId: "kaynak-cf02a",
+            storageBucket: "kaynak-cf02a.firebasestorage.app",
+            messagingSenderId: "1034754005815",
+            appId: "1:1034754005815:web:6e5fe8c70fc5495b1218b2",
+            measurementId: "G-1CD0S6V0DL"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global erişim için window nesnesine ekle
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseMethods = {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged,
+            addDoc,
+            getDocs,
+            updateDoc,
+            doc,
+            collection,
+            query,
+            where,
+            orderBy,
+            serverTimestamp
+        };
+
+        console.log("Firebase başlatıldı!");
+    </script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -33,6 +94,152 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
+        }
+        
+        /* Auth Container */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .auth-box {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .auth-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            color: #666;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-tab.active {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .auth-error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .auth-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        /* Ana Uygulama Stilleri */
+        .app-container {
+            display: none;
         }
         
         /* Header Stilleri */
@@ -84,6 +291,45 @@
             background: rgba(255, 255, 255, 0.2);
             padding: 8px 15px;
             border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 100;
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .user-dropdown.active {
+            display: block;
+        }
+        
+        .user-dropdown-item {
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .user-dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .user-dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 5px 0;
         }
         
         /* Ana İçerik */
@@ -208,25 +454,9 @@
             color: var(--primary-color);
         }
         
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9rem;
         }
         
         .btn-success {
@@ -324,11 +554,6 @@
             background-color: white;
         }
         
-        .assign-operator .btn {
-            padding: 8px 12px;
-            font-size: 0.85rem;
-        }
-        
         /* Modal */
         .modal {
             display: none;
@@ -377,28 +602,12 @@
             padding: 20px;
         }
         
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .form-group input,
-        .form-group select,
         .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 1rem;
-        }
-        
-        .form-group textarea {
             min-height: 120px;
             resize: vertical;
         }
@@ -433,6 +642,11 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+            
+            .auth-box {
+                padding: 30px 20px;
+                margin: 20px;
+            }
         }
         
         /* Filtreleme */
@@ -461,278 +675,395 @@
             background-color: white;
             min-width: 150px;
         }
+        
+        /* Yükleme Animasyonu */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Veri yükleme göstergesi */
+        .data-loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .data-loading i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container header-container">
-            <div class="logo">
-                <i class="fas fa-tools"></i>
-                <div>
-                    <h1>ÜMM Ekip Talep Yönetimi</h1>
-                    <span>Kaynak Atölyesi İş Takip Sistemi</span>
-                </div>
+    <!-- Giriş/Kayıt Ekranı -->
+    <div class="auth-container" id="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h2><i class="fas fa-tools"></i> ÜMM Ekip Talep Sistemi</h2>
+                <p>Kaynak Atölyesi İş Takip Sistemi</p>
             </div>
-            <div class="header-info">
-                <div class="user-profile">
-                    <i class="fas fa-user-circle"></i>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="login-tab">Giriş Yap</div>
+                <div class="auth-tab" id="register-tab">Kayıt Ol</div>
+            </div>
+            
+            <div class="auth-error" id="auth-error"></div>
+            <div class="auth-success" id="auth-success"></div>
+            
+            <!-- Giriş Formu -->
+            <form class="auth-form active" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">E-posta Adresi</label>
+                    <input type="email" id="login-email" placeholder="ornek@firma.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Parola</label>
+                    <input type="password" id="login-password" placeholder="Parolanızı girin" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="login-btn">
+                    <span id="login-btn-text">Giriş Yap</span>
+                    <div class="loading" id="login-loading" style="display: none;"></div>
+                </button>
+            </form>
+            
+            <!-- Kayıt Formu -->
+            <form class="auth-form" id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Ad Soyad</label>
+                    <input type="text" id="register-name" placeholder="Adınız ve soyadınız" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">E-posta Adresi</label>
+                    <input type="email" id="register-email" placeholder="ornek@firma.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Parola</label>
+                    <input type="password" id="register-password" placeholder="En az 6 karakter" minlength="6" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password-confirm">Parola Tekrar</label>
+                    <input type="password" id="register-password-confirm" placeholder="Parolanızı tekrar girin" minlength="6" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="register-btn">
+                    <span id="register-btn-text">Kayıt Ol</span>
+                    <div class="loading" id="register-loading" style="display: none;"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Ana Uygulama -->
+    <div class="app-container" id="app-container">
+        <header>
+            <div class="container header-container">
+                <div class="logo">
+                    <i class="fas fa-tools"></i>
                     <div>
-                        <div class="user-name">Atölye Sorumlusu</div>
-                        <div class="user-role">Yönetici</div>
+                        <h1>ÜMM Ekip Talep Yönetimi</h1>
+                        <span>Kaynak Atölyesi İş Takip Sistemi</span>
                     </div>
                 </div>
-                <div id="current-date" class="current-date">
-                    <!-- JS ile doldurulacak -->
+                <div class="header-info">
+                    <div id="current-date" class="current-date"></div>
+                    <div class="user-profile" id="user-profile">
+                        <i class="fas fa-user-circle"></i>
+                        <div>
+                            <div class="user-name" id="user-name">Kullanıcı</div>
+                            <div class="user-role" id="user-role">Operatör</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-user"></i> Profilim
+                            </a>
+                            <a href="#" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i> Ayarlar
+                            </a>
+                            <div class="user-dropdown-divider"></div>
+                            <a href="#" class="user-dropdown-item" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="dashboard">
-            <aside class="sidebar">
-                <h3>Menü</h3>
-                <ul class="menu">
-                    <li class="menu-item"><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Ana Sayfa</a></li>
-                    <li class="menu-item"><a href="#"><i class="fas fa-list"></i> Tüm Talepler</a></li>
-                    <li class="menu-item"><a href="#"><i class="fas fa-user-plus"></i> Operatörler</a></li>
-                    <li class="menu-item"><a href="#"><i class="fas fa-chart-bar"></i> İstatistikler</a></li>
-                    <li class="menu-item"><a href="#"><i class="fas fa-cog"></i> Ayarlar</a></li>
-                </ul>
+        </header>
+        
+        <div class="container">
+            <div class="dashboard">
+                <aside class="sidebar">
+                    <h3>Menü</h3>
+                    <ul class="menu">
+                        <li class="menu-item"><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Ana Sayfa</a></li>
+                        <li class="menu-item"><a href="#"><i class="fas fa-list"></i> Tüm Talepler</a></li>
+                        <li class="menu-item"><a href="#"><i class="fas fa-user-plus"></i> Operatörler</a></li>
+                        <li class="menu-item"><a href="#"><i class="fas fa-chart-bar"></i> İstatistikler</a></li>
+                        <li class="menu-item"><a href="#"><i class="fas fa-cog"></i> Ayarlar</a></li>
+                    </ul>
+                    
+                    <div style="margin-top: 30px;">
+                        <h3>Sistem İstatistikleri</h3>
+                        <div class="stats-cards" style="grid-template-columns: 1fr;">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: var(--secondary-color);">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="avg-completion-time">0.0</h3>
+                                    <p>Ort. Tamamlanma Süresi (gün)</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: var(--success-color);">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="completed-tasks">0</h3>
+                                    <p>Bu Ay Tamamlanan İş</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
                 
-                <div style="margin-top: 30px;">
-                    <h3>Sistem İstatistikleri</h3>
-                    <div class="stats-cards" style="grid-template-columns: 1fr;">
+                <main class="main-content">
+                    <div class="stats-cards">
                         <div class="stat-card">
                             <div class="stat-icon" style="background-color: var(--secondary-color);">
-                                <i class="fas fa-clock"></i>
+                                <i class="fas fa-inbox"></i>
                             </div>
                             <div class="stat-info">
-                                <h3 id="avg-completion-time">2.3</h3>
-                                <p>Ort. Tamamlanma Süresi (gün)</p>
+                                <h3 id="total-requests">0</h3>
+                                <p>Toplam Talep</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--warning-color);">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="pending-requests">0</h3>
+                                <p>Bekleyen Talep</p>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon" style="background-color: var(--success-color);">
-                                <i class="fas fa-check-circle"></i>
+                                <i class="fas fa-spinner"></i>
                             </div>
                             <div class="stat-info">
-                                <h3 id="completed-tasks">12</h3>
-                                <p>Bu Ay Tamamlanan İş</p>
+                                <h3 id="inprogress-requests">0</h3>
+                                <p>Devam Eden İş</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </aside>
-            
-            <main class="main-content">
-                <div class="stats-cards">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: var(--secondary-color);">
-                            <i class="fas fa-inbox"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="total-requests">8</h3>
-                            <p>Toplam Talep</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: var(--warning-color);">
-                            <i class="fas fa-user-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="pending-requests">3</h3>
-                            <p>Bekleyen Talep</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: var(--success-color);">
-                            <i class="fas fa-spinner"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="inprogress-requests">4</h3>
-                            <p>Devam Eden İş</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #9b59b6;">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="total-operators">5</h3>
-                            <p>Operatör Sayısı</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="requests-container">
-                    <div class="section-header">
-                        <h2><i class="fas fa-list-alt"></i> Aktif Talepler</h2>
-                        <div class="filters">
-                            <div class="filter-group">
-                                <label for="status-filter">Durum</label>
-                                <select id="status-filter">
-                                    <option value="all">Tümü</option>
-                                    <option value="new">Yeni</option>
-                                    <option value="assigned">Atanmış</option>
-                                    <option value="inprogress">Devam Ediyor</option>
-                                </select>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: #9b59b6;">
+                                <i class="fas fa-users"></i>
                             </div>
-                            <div class="filter-group">
-                                <label for="unit-filter">Birim</label>
-                                <select id="unit-filter">
-                                    <option value="all">Tümü</option>
-                                    <option value="uretim">Üretim</option>
-                                    <option value="kalite">Kalite</option>
-                                    <option value="bakim">Bakım</option>
-                                </select>
+                            <div class="stat-info">
+                                <h3 id="total-operators">5</h3>
+                                <p>Operatör Sayısı</p>
                             </div>
-                            <button class="btn btn-primary" id="add-request-btn">
-                                <i class="fas fa-plus"></i> Yeni Talep Ekle
-                            </button>
                         </div>
                     </div>
                     
-                    <div class="table-container">
-                        <table id="requests-table">
-                            <thead>
-                                <tr>
-                                    <th>Talep No</th>
-                                    <th>Talep Eden Birim</th>
-                                    <th>Talep Tarihi</th>
-                                    <th>Açıklama</th>
-                                    <th>Durum</th>
-                                    <th>Operatör</th>
-                                    <th>Tahmini Süre (gün)</th>
-                                    <th>İşlemler</th>
-                                </tr>
-                            </thead>
-                            <tbody id="requests-list">
-                                <!-- Talepler buraya dinamik olarak eklenecek -->
-                            </tbody>
-                        </table>
+                    <div class="requests-container">
+                        <div class="section-header">
+                            <h2><i class="fas fa-list-alt"></i> Aktif Talepler</h2>
+                            <div class="filters">
+                                <div class="filter-group">
+                                    <label for="status-filter">Durum</label>
+                                    <select id="status-filter">
+                                        <option value="all">Tümü</option>
+                                        <option value="new">Yeni</option>
+                                        <option value="assigned">Atanmış</option>
+                                        <option value="inprogress">Devam Ediyor</option>
+                                        <option value="completed">Tamamlandı</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="unit-filter">Birim</label>
+                                    <select id="unit-filter">
+                                        <option value="all">Tümü</option>
+                                        <option value="Üretim">Üretim</option>
+                                        <option value="Kalite">Kalite</option>
+                                        <option value="Bakım">Bakım</option>
+                                        <option value="Depo">Depo</option>
+                                        <option value="İdari İşler">İdari İşler</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" id="add-request-btn">
+                                    <i class="fas fa-plus"></i> Yeni Talep Ekle
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <div id="data-loading" class="data-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Veriler yükleniyor...</p>
+                            </div>
+                            <table id="requests-table" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Talep No</th>
+                                        <th>Talep Eden Birim</th>
+                                        <th>Talep Tarihi</th>
+                                        <th>Açıklama</th>
+                                        <th>Durum</th>
+                                        <th>Operatör</th>
+                                        <th>Tahmini Süre (gün)</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="requests-list">
+                                    <!-- Talepler buraya dinamik olarak eklenecek -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            </main>
-        </div>
-    </div>
-    
-    <!-- Talep Ekleme/Değiştirme Modal -->
-    <div id="request-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title">Yeni Talep Ekle</h3>
-                <button class="close-modal">&times;</button>
+                </main>
             </div>
-            <div class="modal-body">
-                <form id="request-form">
+        </div>
+        
+        <!-- Talep Ekleme/Değiştirme Modal -->
+        <div id="request-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Yeni Talep Ekle</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="request-form">
+                        <div class="form-group">
+                            <label for="request-unit">Talep Eden Birim</label>
+                            <select id="request-unit" required>
+                                <option value="">Birim Seçiniz</option>
+                                <option value="Üretim">Üretim</option>
+                                <option value="Kalite Kontrol">Kalite Kontrol</option>
+                                <option value="Bakım Onarım">Bakım Onarım</option>
+                                <option value="Depo">Depo</option>
+                                <option value="İdari İşler">İdari İşler</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="request-description">Talep Açıklaması</label>
+                            <textarea id="request-description" placeholder="Talep detaylarını buraya yazın..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="request-urgency">Aciliyet Durumu</label>
+                            <select id="request-urgency" required>
+                                <option value="normal">Normal</option>
+                                <option value="yüksek">Yüksek</option>
+                                <option value="acil">Acil</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="request-estimated">Tahmini Tamamlanma Süresi (gün)</label>
+                            <input type="number" id="request-estimated" min="1" max="30" value="3" required>
+                        </div>
+                        
+                        <input type="hidden" id="request-id" value="">
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                            <button type="button" class="btn btn-secondary close-modal">İptal</button>
+                            <button type="submit" class="btn btn-primary" id="modal-submit-btn">Talep Ekle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- İş Başlatma Modal -->
+        <div id="start-job-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>İşi Başlat</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
                     <div class="form-group">
-                        <label for="request-unit">Talep Eden Birim</label>
-                        <select id="request-unit" required>
-                            <option value="">Birim Seçiniz</option>
-                            <option value="uretim">Üretim</option>
-                            <option value="kalite">Kalite Kontrol</option>
-                            <option value="bakim">Bakım Onarım</option>
-                            <option value="depo">Depo</option>
-                            <option value="idari">İdari İşler</option>
+                        <label for="start-job-operator">Operatör Ataması</label>
+                        <select id="start-job-operator">
+                            <option value="">Operatör Seçiniz</option>
+                            <option value="Ahmet Yılmaz">Ahmet Yılmaz (Kaynak Uzmanı)</option>
+                            <option value="Mehmet Demir">Mehmet Demir (Talaşlı İmalat)</option>
+                            <option value="Ayşe Kaya">Ayşe Kaya (Montaj)</option>
+                            <option value="Mustafa Şahin">Mustafa Şahin (Kaynak)</option>
+                            <option value="Zeynep Arslan">Zeynep Arslan (Kalite Kontrol)</option>
                         </select>
                     </div>
-                    
                     <div class="form-group">
-                        <label for="request-description">Talep Açıklaması</label>
-                        <textarea id="request-description" placeholder="Talep detaylarını buraya yazın..." required></textarea>
+                        <label for="start-job-notes">İş Notları (Opsiyonel)</label>
+                        <textarea id="start-job-notes" placeholder="İş ile ilgili notlar..."></textarea>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="request-urgency">Aciliyet Durumu</label>
-                        <select id="request-urgency" required>
-                            <option value="normal">Normal</option>
-                            <option value="yuksek">Yüksek</option>
-                            <option value="acil">Acil</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="request-estimated">Tahmini Tamamlanma Süresi (gün)</label>
-                        <input type="number" id="request-estimated" min="1" max="30" value="3" required>
-                    </div>
-                    
-                    <input type="hidden" id="request-id" value="">
-                    
+                    <input type="hidden" id="start-job-id" value="">
                     <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                        <button type="button" class="btn close-modal">İptal</button>
-                        <button type="submit" class="btn btn-primary" id="modal-submit-btn">Talep Ekle</button>
+                        <button type="button" class="btn btn-secondary close-modal">İptal</button>
+                        <button type="button" class="btn btn-success" id="confirm-start-job">İşi Başlat</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
+        
+        <!-- İş Tamamlama Modal -->
+        <div id="complete-job-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>İşi Tamamla</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="actual-days">Gerçekleşen Tamamlanma Süresi (gün)</label>
+                        <input type="number" id="actual-days" min="1" max="30" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="completion-notes">Tamamlama Notları</label>
+                        <textarea id="completion-notes" placeholder="İş tamamlama detayları..."></textarea>
+                    </div>
+                    <input type="hidden" id="complete-job-id" value="">
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                        <button type="button" class="btn btn-secondary close-modal">İptal</button>
+                        <button type="button" class="btn btn-success" id="confirm-complete-job">İşi Tamamla</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="container">
+                <p>ÜMM Ekip Talep Yönetim Sistemi &copy; <span id="current-year"></span> - Tüm hakları saklıdır.</p>
+                <p style="font-size: 0.9rem; margin-top: 5px;">Mobil uyumlu, anlık talep takibi ve operatör yönetimi</p>
+            </div>
+        </footer>
     </div>
-    
-    <!-- İş Başlatma Modal -->
-    <div id="start-job-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>İşi Başlat</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="start-job-operator">Operatör Ataması</label>
-                    <select id="start-job-operator">
-                        <option value="">Operatör Seçiniz</option>
-                        <option value="operator1">Ahmet Yılmaz (Kaynak Uzmanı)</option>
-                        <option value="operator2">Mehmet Demir (Talaşlı İmalat)</option>
-                        <option value="operator3">Ayşe Kaya (Montaj)</option>
-                        <option value="operator4">Mustafa Şahin (Kaynak)</option>
-                        <option value="operator5">Zeynep Arslan (Kalite Kontrol)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="start-job-notes">İş Notları (Opsiyonel)</label>
-                    <textarea id="start-job-notes" placeholder="İş ile ilgili notlar..."></textarea>
-                </div>
-                <input type="hidden" id="start-job-id" value="">
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                    <button type="button" class="btn close-modal">İptal</button>
-                    <button type="button" class="btn btn-success" id="confirm-start-job">İşi Başlat</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- İş Tamamlama Modal -->
-    <div id="complete-job-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>İşi Tamamla</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="actual-days">Gerçekleşen Tamamlanma Süresi (gün)</label>
-                    <input type="number" id="actual-days" min="1" max="30" required>
-                </div>
-                <div class="form-group">
-                    <label for="completion-notes">Tamamlama Notları</label>
-                    <textarea id="completion-notes" placeholder="İş tamamlama detayları..."></textarea>
-                </div>
-                <input type="hidden" id="complete-job-id" value="">
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                    <button type="button" class="btn close-modal">İptal</button>
-                    <button type="button" class="btn btn-success" id="confirm-complete-job">İşi Tamamla</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <footer>
-        <div class="container">
-            <p>ÜMM Ekip Talep Yönetim Sistemi &copy; <span id="current-year"></span> - Tüm hakları saklıdır.</p>
-            <p style="font-size: 0.9rem; margin-top: 5px;">Mobil uyumlu, anlık talep takibi ve operatör yönetimi</p>
-        </div>
-    </footer>
 
     <script>
+        // Global değişkenler
+        let currentUser = null;
+        let requests = [];
+        
         // Tarih ve saat güncelleme
         function updateDateTime() {
             const now = new Date();
@@ -747,144 +1078,307 @@
                 minute: '2-digit'
             });
             
-            document.getElementById('current-date').innerHTML = `
-                <div>${dateStr}</div>
-                <div>${timeStr}</div>
-            `;
+            const dateElement = document.getElementById('current-date');
+            if (dateElement) {
+                dateElement.innerHTML = `
+                    <div>${dateStr}</div>
+                    <div>${timeStr}</div>
+                `;
+            }
         }
-        
-        // İlk tarih güncellemesi
-        updateDateTime();
-        // Her dakika tarihi güncelle
-        setInterval(updateDateTime, 60000);
         
         // Yıl bilgisi
         document.getElementById('current-year').textContent = new Date().getFullYear();
         
-        // Örnek talep verileri
-        let requests = [
-            {
-                id: 1001,
-                unit: "Üretim",
-                date: "2023-10-15",
-                description: "Kaynak makinesi contası değişimi",
-                status: "new",
-                operator: "",
-                estimatedDays: 2,
-                actualDays: null,
-                startDate: null,
-                completionDate: null,
-                urgency: "yuksek"
-            },
-            {
-                id: 1002,
-                unit: "Kalite",
-                date: "2023-10-14",
-                description: "Ölçüm aleti kalibrasyonu",
-                status: "assigned",
-                operator: "Ahmet Yılmaz",
-                estimatedDays: 3,
-                actualDays: null,
-                startDate: "2023-10-15",
-                completionDate: null,
-                urgency: "normal"
-            },
-            {
-                id: 1003,
-                unit: "Bakım",
-                date: "2023-10-12",
-                description: "Pres makinesi yağ kaçağı onarımı",
-                status: "inprogress",
-                operator: "Mehmet Demir",
-                estimatedDays: 5,
-                actualDays: null,
-                startDate: "2023-10-13",
-                completionDate: null,
-                urgency: "acil"
-            },
-            {
-                id: 1004,
-                unit: "Depo",
-                date: "2023-10-10",
-                description: "Raf kaynak işlemi",
-                status: "inprogress",
-                operator: "Mustafa Şahin",
-                estimatedDays: 4,
-                actualDays: null,
-                startDate: "2023-10-11",
-                completionDate: null,
-                urgency: "normal"
-            },
-            {
-                id: 1005,
-                unit: "İdari İşler",
-                date: "2023-10-08",
-                description: "Ofis kapı menteşesi kaynağı",
-                status: "completed",
-                operator: "Ayşe Kaya",
-                estimatedDays: 1,
-                actualDays: 2,
-                startDate: "2023-10-09",
-                completionDate: "2023-10-11",
-                urgency: "normal"
-            },
-            {
-                id: 1006,
-                unit: "Üretim",
-                date: "2023-10-07",
-                description: "Konveyör bant kaynak tamiri",
-                status: "completed",
-                operator: "Ahmet Yılmaz",
-                estimatedDays: 3,
-                actualDays: 3,
-                startDate: "2023-10-08",
-                completionDate: "2023-10-11",
-                urgency: "yuksek"
-            },
-            {
-                id: 1007,
-                unit: "Kalite",
-                date: "2023-10-06",
-                description: "Numune parça üretimi",
-                status: "inprogress",
-                operator: "Zeynep Arslan",
-                estimatedDays: 6,
-                actualDays: null,
-                startDate: "2023-10-07",
-                completionDate: null,
-                urgency: "normal"
-            },
-            {
-                id: 1008,
-                unit: "Bakım",
-                date: "2023-10-05",
-                description: "Havalandırma sistemi kaynağı",
-                status: "assigned",
-                operator: "Mustafa Şahin",
-                estimatedDays: 4,
-                actualDays: null,
-                startDate: null,
-                completionDate: null,
-                urgency: "normal"
+        // Firebase authentication durum takibi
+        function initAuth() {
+            if (!window.firebaseAuth) {
+                console.error("Firebase Auth henüz yüklenmedi!");
+                setTimeout(initAuth, 500);
+                return;
             }
-        ];
+            
+            const auth = window.firebaseAuth;
+            const { onAuthStateChanged } = window.firebaseMethods;
+            
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // Kullanıcı giriş yapmış
+                    currentUser = user;
+                    showApp();
+                    loadRequestsFromFirestore();
+                } else {
+                    // Kullanıcı çıkış yapmış
+                    currentUser = null;
+                    showAuth();
+                }
+            });
+        }
         
-        // Operatör listesi
-        const operators = [
-            { id: "operator1", name: "Ahmet Yılmaz", specialty: "Kaynak Uzmanı" },
-            { id: "operator2", name: "Mehmet Demir", specialty: "Talaşlı İmalat" },
-            { id: "operator3", name: "Ayşe Kaya", specialty: "Montaj" },
-            { id: "operator4", name: "Mustafa Şahin", specialty: "Kaynak" },
-            { id: "operator5", name: "Zeynep Arslan", specialty: "Kalite Kontrol" }
-        ];
+        // Uygulamayı göster
+        function showApp() {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            
+            // Kullanıcı bilgilerini güncelle
+            if (currentUser) {
+                document.getElementById('user-name').textContent = currentUser.displayName || currentUser.email.split('@')[0];
+                document.getElementById('user-role').textContent = "Operatör";
+            }
+            
+            // Tarih güncellemesini başlat
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+        }
         
-        // Durum etiketleri
-        const statusLabels = {
-            "new": { text: "Yeni Talep", class: "status-new" },
-            "assigned": { text: "Operatör Atandı", class: "status-assigned" },
-            "inprogress": { text: "Devam Ediyor", class: "status-inprogress" },
-            "completed": { text: "Tamamlandı", class: "status-completed" }
-        };
+        // Giriş ekranını göster
+        function showAuth() {
+            document.getElementById('auth-container').style.display = 'flex';
+            document.getElementById('app-container').style.display = 'none';
+        }
+        
+        // Hata göster
+        function showError(message, elementId = 'auth-error') {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            // 5 saniye sonra gizle
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Başarı mesajı göster
+        function showSuccess(message, elementId = 'auth-success') {
+            const successElement = document.getElementById(elementId);
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            
+            // 3 saniye sonra gizle
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Yükleme durumunu göster
+        function showLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const loadingElement = document.getElementById(buttonId + '-loading');
+            const textElement = document.getElementById(buttonId + '-text');
+            
+            if (isLoading) {
+                loadingElement.style.display = 'inline-block';
+                textElement.style.display = 'none';
+                button.disabled = true;
+            } else {
+                loadingElement.style.display = 'none';
+                textElement.style.display = 'inline';
+                button.disabled = false;
+            }
+        }
+        
+        // Tab değiştirme
+        document.getElementById('login-tab').addEventListener('click', function() {
+            document.getElementById('login-tab').classList.add('active');
+            document.getElementById('register-tab').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
+            document.getElementById('register-form').classList.remove('active');
+        });
+        
+        document.getElementById('register-tab').addEventListener('click', function() {
+            document.getElementById('register-tab').classList.add('active');
+            document.getElementById('login-tab').classList.remove('active');
+            document.getElementById('register-form').classList.add('active');
+            document.getElementById('login-form').classList.remove('active');
+        });
+        
+        // Giriş formu
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                showError('Lütfen tüm alanları doldurun.');
+                return;
+            }
+            
+            try {
+                showLoading('login-btn', true);
+                const { signInWithEmailAndPassword } = window.firebaseMethods;
+                await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+                
+                showSuccess('Giriş başarılı!');
+            } catch (error) {
+                console.error('Giriş hatası:', error);
+                
+                let errorMessage = 'Giriş yapılırken bir hata oluştu.';
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Hatalı parola.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Geçersiz e-posta adresi.';
+                }
+                
+                showError(errorMessage);
+            } finally {
+                showLoading('login-btn', false);
+            }
+        });
+        
+        // Kayıt formu
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const passwordConfirm = document.getElementById('register-password-confirm').value;
+            
+            if (!name || !email || !password || !passwordConfirm) {
+                showError('Lütfen tüm alanları doldurun.');
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                showError('Parolalar eşleşmiyor.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('Parola en az 6 karakter olmalıdır.');
+                return;
+            }
+            
+            try {
+                showLoading('register-btn', true);
+                const { createUserWithEmailAndPassword } = window.firebaseMethods;
+                const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+                
+                // Kullanıcı adını güncelle
+                await userCredential.user.updateProfile({
+                    displayName: name
+                });
+                
+                showSuccess('Kayıt başarılı! Giriş yapabilirsiniz.');
+                
+                // Giriş tab'ına geç
+                document.getElementById('login-tab').click();
+                document.getElementById('login-email').value = email;
+                document.getElementById('register-form').reset();
+                
+            } catch (error) {
+                console.error('Kayıt hatası:', error);
+                
+                let errorMessage = 'Kayıt olurken bir hata oluştu.';
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'Bu e-posta adresi zaten kullanımda.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Geçersiz e-posta adresi.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Parola çok zayıf. Daha güçlü bir parola seçin.';
+                }
+                
+                showError(errorMessage);
+            } finally {
+                showLoading('register-btn', false);
+            }
+        });
+        
+        // Çıkış yap
+        document.getElementById('logout-btn').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const { signOut } = window.firebaseMethods;
+                await signOut(window.firebaseAuth);
+                showSuccess('Çıkış yapıldı.');
+            } catch (error) {
+                console.error('Çıkış hatası:', error);
+                showError('Çıkış yapılırken bir hata oluştu.');
+            }
+        });
+        
+        // Kullanıcı dropdown menüsü
+        document.getElementById('user-profile').addEventListener('click', function() {
+            document.getElementById('user-dropdown').classList.toggle('active');
+        });
+        
+        // Firestore'dan talepleri yükle
+        async function loadRequestsFromFirestore() {
+            try {
+                document.getElementById('data-loading').style.display = 'block';
+                document.getElementById('requests-table').style.display = 'none';
+                
+                const { getDocs, collection, query, orderBy } = window.firebaseMethods;
+                const requestsRef = collection(window.firebaseDb, 'requests');
+                const q = query(requestsRef, orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                requests = [];
+                querySnapshot.forEach((doc) => {
+                    const requestData = doc.data();
+                    requests.push({
+                        id: doc.id,
+                        ...requestData
+                    });
+                });
+                
+                updateRequestsList();
+                document.getElementById('data-loading').style.display = 'none';
+                document.getElementById('requests-table').style.display = 'table';
+                
+            } catch (error) {
+                console.error('Talepler yüklenirken hata:', error);
+                showError('Talepler yüklenirken bir hata oluştu.', 'auth-error');
+                document.getElementById('data-loading').style.display = 'none';
+                
+                // Örnek verilerle devam et
+                loadSampleData();
+            }
+        }
+        
+        // Örnek veriler (Firestore bağlantısı başarısız olursa)
+        function loadSampleData() {
+            requests = [
+                {
+                    id: 'sample1',
+                    requestNumber: 1001,
+                    unit: "Üretim",
+                    date: "2023-10-15",
+                    description: "Kaynak makinesi contası değişimi",
+                    status: "new",
+                    operator: "",
+                    estimatedDays: 2,
+                    actualDays: null,
+                    startDate: null,
+                    completionDate: null,
+                    urgency: "yüksek",
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 'sample2',
+                    requestNumber: 1002,
+                    unit: "Kalite",
+                    date: "2023-10-14",
+                    description: "Ölçüm aleti kalibrasyonu",
+                    status: "assigned",
+                    operator: "Ahmet Yılmaz",
+                    estimatedDays: 3,
+                    actualDays: null,
+                    startDate: "2023-10-15",
+                    completionDate: null,
+                    urgency: "normal",
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            updateRequestsList();
+            document.getElementById('requests-table').style.display = 'table';
+        }
         
         // Talep listesini güncelle
         function updateRequestsList() {
@@ -902,21 +1396,11 @@
             }
             
             if (unitFilter !== 'all') {
-                filteredRequests = filteredRequests.filter(req => {
-                    const unitMapping = {
-                        'uretim': 'Üretim',
-                        'kalite': 'Kalite',
-                        'bakim': 'Bakım'
-                    };
-                    return req.unit === unitMapping[unitFilter];
-                });
+                filteredRequests = filteredRequests.filter(req => req.unit === unitFilter);
             }
             
-            // Yeni taleplerin üstte görünmesi için ters sıralama
-            filteredRequests.sort((a, b) => b.id - a.id);
-            
             filteredRequests.forEach(request => {
-                const status = statusLabels[request.status];
+                const status = getStatusInfo(request.status);
                 const row = document.createElement('tr');
                 
                 // İşlem butonlarını duruma göre belirle
@@ -962,7 +1446,7 @@
                 }
                 
                 row.innerHTML = `
-                    <td>${request.id}</td>
+                    <td>${request.requestNumber || request.id}</td>
                     <td>${request.unit}</td>
                     <td>${formatDate(request.date)}</td>
                     <td>${request.description}</td>
@@ -981,17 +1465,29 @@
             // Buton event listener'larını ekle
             document.querySelectorAll('.start-job').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const requestId = parseInt(this.getAttribute('data-id'));
+                    const requestId = this.getAttribute('data-id');
                     openStartJobModal(requestId);
                 });
             });
             
             document.querySelectorAll('.complete-job').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const requestId = parseInt(this.getAttribute('data-id'));
+                    const requestId = this.getAttribute('data-id');
                     openCompleteJobModal(requestId);
                 });
             });
+        }
+        
+        // Durum bilgilerini al
+        function getStatusInfo(status) {
+            const statusMap = {
+                "new": { text: "Yeni Talep", class: "status-new" },
+                "assigned": { text: "Operatör Atandı", class: "status-assigned" },
+                "inprogress": { text: "Devam Ediyor", class: "status-inprogress" },
+                "completed": { text: "Tamamlandı", class: "status-completed" }
+            };
+            
+            return statusMap[status] || { text: status, class: "status-new" };
         }
         
         // İstatistikleri güncelle
@@ -1000,26 +1496,30 @@
             const pendingRequests = requests.filter(req => req.status === 'new').length;
             const inprogressRequests = requests.filter(req => req.status === 'inprogress').length;
             const completedRequests = requests.filter(req => req.status === 'completed').length;
-            const totalOperators = operators.length;
             
             // Ortalama tamamlanma süresini hesapla
             const completedTasks = requests.filter(req => req.status === 'completed');
             const avgCompletionTime = completedTasks.length > 0 
-                ? (completedTasks.reduce((sum, req) => sum + req.actualDays, 0) / completedTasks.length).toFixed(1)
+                ? (completedTasks.reduce((sum, req) => sum + (req.actualDays || 0), 0) / completedTasks.length).toFixed(1)
                 : "0.0";
             
             document.getElementById('total-requests').textContent = totalRequests;
             document.getElementById('pending-requests').textContent = pendingRequests;
             document.getElementById('inprogress-requests').textContent = inprogressRequests;
-            document.getElementById('total-operators').textContent = totalOperators;
             document.getElementById('completed-tasks').textContent = completedRequests;
             document.getElementById('avg-completion-time').textContent = avgCompletionTime;
         }
         
         // Tarih formatı
         function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('tr-TR');
+            if (!dateStr) return '-';
+            
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('tr-TR');
+            } catch (e) {
+                return dateStr;
+            }
         }
         
         // Modal işlemleri
@@ -1064,47 +1564,60 @@
         });
         
         // Talep formu submit
-        document.getElementById('request-form').addEventListener('submit', function(e) {
+        document.getElementById('request-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const requestId = document.getElementById('request-id').value;
-            const unitSelect = document.getElementById('request-unit');
-            const unitText = unitSelect.options[unitSelect.selectedIndex].text;
+            if (!currentUser) {
+                showError('Lütfen önce giriş yapın.', 'auth-error');
+                closeAllModals();
+                return;
+            }
+            
+            const unit = document.getElementById('request-unit').value;
             const description = document.getElementById('request-description').value;
             const estimatedDays = parseInt(document.getElementById('request-estimated').value);
             const urgency = document.getElementById('request-urgency').value;
             
-            if (requestId) {
-                // Talep güncelleme
-                const index = requests.findIndex(req => req.id == requestId);
-                if (index !== -1) {
-                    requests[index].unit = unitText;
-                    requests[index].description = description;
-                    requests[index].estimatedDays = estimatedDays;
-                    requests[index].urgency = urgency;
-                }
-            } else {
-                // Yeni talep ekleme
-                const newId = requests.length > 0 ? Math.max(...requests.map(req => req.id)) + 1 : 1001;
+            if (!unit || !description || !estimatedDays) {
+                showError('Lütfen tüm alanları doldurun.', 'auth-error');
+                return;
+            }
+            
+            try {
+                const { addDoc, collection, serverTimestamp } = window.firebaseMethods;
+                const requestsRef = collection(window.firebaseDb, 'requests');
+                
+                // Yeni talep numarası oluştur
+                const requestNumber = requests.length > 0 
+                    ? Math.max(...requests.map(req => req.requestNumber || 0)) + 1 
+                    : 1001;
+                
                 const newRequest = {
-                    id: newId,
-                    unit: unitText,
-                    date: new Date().toISOString().split('T')[0],
-                    description: description,
+                    requestNumber,
+                    unit,
+                    description,
+                    estimatedDays,
+                    urgency,
                     status: "new",
                     operator: "",
-                    estimatedDays: estimatedDays,
                     actualDays: null,
                     startDate: null,
                     completionDate: null,
-                    urgency: urgency
+                    createdBy: currentUser.email,
+                    createdAt: serverTimestamp(),
+                    date: new Date().toISOString().split('T')[0]
                 };
                 
-                requests.unshift(newRequest);
+                await addDoc(requestsRef, newRequest);
+                
+                showSuccess('Talep başarıyla eklendi!');
+                closeAllModals();
+                loadRequestsFromFirestore();
+                
+            } catch (error) {
+                console.error('Talep ekleme hatası:', error);
+                showError('Talep eklenirken bir hata oluştu.', 'auth-error');
             }
-            
-            updateRequestsList();
-            closeAllModals();
         });
         
         // İş başlatma modal'ını aç
@@ -1113,53 +1626,49 @@
             
             // Talep bilgilerini doldur
             const request = requests.find(req => req.id === requestId);
-            if (request) {
-                // Eğer talep zaten atanmışsa, operatör seçimini doldur
-                if (request.operator) {
-                    const operatorOption = Array.from(document.getElementById('start-job-operator').options)
-                        .find(opt => opt.text.includes(request.operator.split(' ')[0]));
-                    if (operatorOption) {
-                        document.getElementById('start-job-operator').value = operatorOption.value;
-                    }
-                }
+            if (request && request.operator) {
+                document.getElementById('start-job-operator').value = request.operator;
             }
             
             openModal(startJobModal);
         }
         
         // İş başlatma onayı
-        document.getElementById('confirm-start-job').addEventListener('click', function() {
-            const requestId = parseInt(document.getElementById('start-job-id').value);
-            const operatorId = document.getElementById('start-job-operator').value;
+        document.getElementById('confirm-start-job').addEventListener('click', async function() {
+            const requestId = document.getElementById('start-job-id').value;
+            const operator = document.getElementById('start-job-operator').value;
             const notes = document.getElementById('start-job-notes').value;
             
-            if (!operatorId) {
-                alert('Lütfen bir operatör seçin!');
+            if (!operator) {
+                showError('Lütfen bir operatör seçin!', 'auth-error');
                 return;
             }
             
-            const operator = operators.find(op => op.id === operatorId);
-            if (!operator) return;
-            
-            // Talep durumunu güncelle
-            const requestIndex = requests.findIndex(req => req.id === requestId);
-            if (requestIndex !== -1) {
-                requests[requestIndex].operator = operator.name;
-                requests[requestIndex].status = requests[requestIndex].status === 'new' ? 'assigned' : 'inprogress';
+            try {
+                const { updateDoc, doc } = window.firebaseMethods;
+                const requestRef = doc(window.firebaseDb, 'requests', requestId);
                 
-                // İş başlatma tarihini ekle
-                if (!requests[requestIndex].startDate) {
-                    requests[requestIndex].startDate = new Date().toISOString().split('T')[0];
-                }
+                const updateData = {
+                    operator,
+                    startDate: new Date().toISOString().split('T')[0],
+                    status: 'inprogress'
+                };
                 
-                // Notları ekle (gerçek uygulamada veritabanına kaydedilir)
+                // Eğer not eklendiyse
                 if (notes) {
-                    console.log(`İş ${requestId} notu: ${notes}`);
+                    updateData.notes = notes;
                 }
+                
+                await updateDoc(requestRef, updateData);
+                
+                showSuccess('İş başlatıldı!');
+                closeAllModals();
+                loadRequestsFromFirestore();
+                
+            } catch (error) {
+                console.error('İş başlatma hatası:', error);
+                showError('İş başlatılırken bir hata oluştu.', 'auth-error');
             }
-            
-            updateRequestsList();
-            closeAllModals();
         });
         
         // İş tamamlama modal'ını aç
@@ -1169,47 +1678,58 @@
             // Talep bilgilerini doldur
             const request = requests.find(req => req.id === requestId);
             if (request) {
-                document.getElementById('actual-days').value = request.estimatedDays;
+                document.getElementById('actual-days').value = request.estimatedDays || 3;
             }
             
             openModal(completeJobModal);
         }
         
         // İş tamamlama onayı
-        document.getElementById('confirm-complete-job').addEventListener('click', function() {
-            const requestId = parseInt(document.getElementById('complete-job-id').value);
+        document.getElementById('confirm-complete-job').addEventListener('click', async function() {
+            const requestId = document.getElementById('complete-job-id').value;
             const actualDays = parseInt(document.getElementById('actual-days').value);
             const notes = document.getElementById('completion-notes').value;
             
             if (!actualDays || actualDays < 1) {
-                alert('Lütfen geçerli bir tamamlanma süresi girin!');
+                showError('Lütfen geçerli bir tamamlanma süresi girin!', 'auth-error');
                 return;
             }
             
-            // Talep durumunu güncelle
-            const requestIndex = requests.findIndex(req => req.id === requestId);
-            if (requestIndex !== -1) {
-                requests[requestIndex].status = 'completed';
-                requests[requestIndex].actualDays = actualDays;
-                requests[requestIndex].completionDate = new Date().toISOString().split('T')[0];
+            try {
+                const { updateDoc, doc } = window.firebaseMethods;
+                const requestRef = doc(window.firebaseDb, 'requests', requestId);
                 
-                // Notları ekle (gerçek uygulamada veritabanına kaydedilir)
+                const updateData = {
+                    status: 'completed',
+                    actualDays,
+                    completionDate: new Date().toISOString().split('T')[0]
+                };
+                
+                // Eğer not eklendiyse
                 if (notes) {
-                    console.log(`İş ${requestId} tamamlama notu: ${notes}`);
+                    updateData.completionNotes = notes;
                 }
+                
+                await updateDoc(requestRef, updateData);
+                
+                showSuccess('İş tamamlandı!');
+                closeAllModals();
+                loadRequestsFromFirestore();
+                
+            } catch (error) {
+                console.error('İş tamamlama hatası:', error);
+                showError('İş tamamlanırken bir hata oluştu.', 'auth-error');
             }
-            
-            updateRequestsList();
-            closeAllModals();
         });
         
         // Filtreleme event listener'ları
         document.getElementById('status-filter').addEventListener('change', updateRequestsList);
         document.getElementById('unit-filter').addEventListener('change', updateRequestsList);
         
-        // Sayfa yüklendiğinde talepleri listele
+        // Sayfa yüklendiğinde Firebase'i başlat
         document.addEventListener('DOMContentLoaded', function() {
-            updateRequestsList();
+            // Firebase modüllerinin yüklenmesini bekle
+            setTimeout(initAuth, 1000);
         });
     </script>
 </body>
