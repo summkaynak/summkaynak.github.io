@@ -6,7 +6,6 @@
     <title>ÜMM Ekip - Talep Yönetim Sistemi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Tüm CSS stilleri buraya gelecek (önceki mesajdaki CSS'i buraya kopyalayın) */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -174,6 +173,11 @@
             color: #DB4437;
         }
         
+        .btn-google:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
         .auth-divider {
             text-align: center;
             margin: 20px 0;
@@ -217,6 +221,15 @@
             display: none;
         }
         
+        .auth-info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
         /* Yükleme Animasyonu */
         .loading {
             display: inline-block;
@@ -232,9 +245,6 @@
             to { transform: rotate(360deg); }
         }
         
-        /* ... Diğer CSS kuralları önceki mesajdaki gibi devam edecek ... */
-        
-        /* Düzeltme: Yükleme butonları için */
         .btn-loading {
             position: relative;
         }
@@ -258,6 +268,41 @@
         .btn-loading.loading .loading-spinner {
             display: block;
         }
+        
+        /* Domain Uyarısı */
+        .domain-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .domain-warning h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #856404;
+        }
+        
+        .domain-warning ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .domain-warning li {
+            margin-bottom: 5px;
+        }
+        
+        .domain-warning a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .domain-warning a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -267,6 +312,20 @@
             <div class="auth-header">
                 <h2><i class="fas fa-tools"></i> ÜMM Ekip Talep Sistemi</h2>
                 <p>Kaynak Atölyesi İş Takip Sistemi</p>
+            </div>
+            
+            <!-- Domain Uyarısı (Sadece localhost için gösterilecek) -->
+            <div class="domain-warning" id="domain-warning" style="display: none;">
+                <h4><i class="fas fa-exclamation-triangle"></i> Domain Yapılandırması Gerekli</h4>
+                <p>Google ile giriş için Firebase Console'da domain ayarları yapmanız gerekiyor:</p>
+                <ul>
+                    <li>Firebase Console > Authentication > Sign-in method > Google</li>
+                    <li>Google provider'ı etkinleştirin</li>
+                    <li>"Authorized domains" bölümüne şunları ekleyin:</li>
+                    <li><strong>localhost</strong> (local geliştirme için)</li>
+                    <li><strong>127.0.0.1</strong> (local geliştirme için)</li>
+                </ul>
+                <p><a href="https://console.firebase.google.com/project/kaynak-cf02a/authentication/providers" target="_blank">Firebase Console'a Git</a></p>
             </div>
             
             <div class="auth-tabs">
@@ -300,8 +359,11 @@
                     <span>veya</span>
                 </div>
                 
-                <button type="button" class="btn btn-google" id="google-login-btn">
-                    <i class="fab fa-google"></i> Google ile Giriş Yap
+                <button type="button" class="btn btn-google btn-loading" id="google-login-btn">
+                    <i class="fab fa-google"></i> <span class="btn-text">Google ile Giriş Yap</span>
+                    <div class="loading-spinner">
+                        <div class="loading"></div>
+                    </div>
                 </button>
             </form>
             
@@ -338,10 +400,18 @@
                     <span>veya</span>
                 </div>
                 
-                <button type="button" class="btn btn-google" id="google-register-btn">
-                    <i class="fab fa-google"></i> Google ile Kayıt Ol
+                <button type="button" class="btn btn-google btn-loading" id="google-register-btn">
+                    <i class="fab fa-google"></i> <span class="btn-text">Google ile Kayıt Ol</span>
+                    <div class="loading-spinner">
+                        <div class="loading"></div>
+                    </div>
                 </button>
             </form>
+            
+            <div class="auth-info">
+                <p><i class="fas fa-info-circle"></i> <strong>Test Kullanıcısı:</strong> demo@test.com / demopass</p>
+                <p style="margin-top: 5px; font-size: 0.85rem;">(Firebase'de önceden oluşturulmuş test kullanıcısı)</p>
+            </div>
         </div>
     </div>
     
@@ -385,24 +455,9 @@
         </header>
         
         <div class="container">
-            <div class="dashboard">
-                <aside class="sidebar">
-                    <h3>Menü</h3>
-                    <ul class="menu">
-                        <li class="menu-item"><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Ana Sayfa</a></li>
-                        <li class="menu-item"><a href="#"><i class="fas fa-list"></i> Tüm Talepler</a></li>
-                        <li class="menu-item"><a href="#"><i class="fas fa-user-plus"></i> Operatörler</a></li>
-                        <li class="menu-item"><a href="#"><i class="fas fa-chart-bar"></i> İstatistikler</a></li>
-                        <li class="menu-item"><a href="#"><i class="fas fa-cog"></i> Ayarlar</a></li>
-                    </ul>
-                </aside>
-                
-                <main class="main-content">
-                    <div class="welcome-message">
-                        <h2>Hoş Geldiniz, <span id="welcome-name">Kullanıcı</span>!</h2>
-                        <p>Sistemi kullanmaya başlamak için soldaki menüden bir seçenek belirleyin.</p>
-                    </div>
-                </main>
+            <div class="welcome-message">
+                <h2>Hoş Geldiniz, <span id="welcome-name">Kullanıcı</span>!</h2>
+                <p>Taleplerinizi yönetmek için menüyü kullanabilirsiniz.</p>
             </div>
         </div>
         
@@ -426,6 +481,18 @@
             GoogleAuthProvider,
             signInWithPopup
         } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { 
+            getFirestore,
+            collection,
+            addDoc,
+            getDocs,
+            updateDoc,
+            doc,
+            query,
+            where,
+            orderBy,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         
         // Firebase yapılandırmanız
         const firebaseConfig = {
@@ -441,19 +508,30 @@
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
         console.log("Firebase başlatıldı!");
         
         // Global erişim için
         window.firebaseAuth = auth;
+        window.firebaseDb = db;
         window.googleProvider = googleProvider;
         window.firebaseFunctions = {
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
             signOut,
             onAuthStateChanged,
-            signInWithPopup
+            signInWithPopup,
+            addDoc,
+            getDocs,
+            updateDoc,
+            doc,
+            collection,
+            query,
+            where,
+            orderBy,
+            serverTimestamp
         };
         
         // Firebase hazır olduğunda
@@ -466,11 +544,18 @@
         // Global değişkenler
         let currentUser = null;
         let isFirebaseReady = false;
+        let currentDomain = window.location.hostname;
+        let isLocalhost = currentDomain === 'localhost' || currentDomain === '127.0.0.1';
         
         // Uygulamayı başlat
         function initApp() {
             isFirebaseReady = true;
-            console.log("Firebase hazır!");
+            console.log("Firebase hazır! Domain:", currentDomain);
+            
+            // Localhost'ta domain uyarısını göster
+            if (isLocalhost) {
+                document.getElementById('domain-warning').style.display = 'block';
+            }
             
             // Firebase authentication durum takibi
             if (window.firebaseAuth && window.firebaseFunctions) {
@@ -491,6 +576,26 @@
             
             // Event listener'ları ekle
             setupEventListeners();
+            
+            // Test kullanıcısı oluştur (eğer yoksa)
+            createTestUserIfNeeded();
+        }
+        
+        // Test kullanıcısı oluştur
+        async function createTestUserIfNeeded() {
+            try {
+                const testEmail = "demo@test.com";
+                const testPassword = "demopass";
+                
+                // Önce giriş yapmayı dene
+                const { signInWithEmailAndPassword } = window.firebaseFunctions;
+                await signInWithEmailAndPassword(window.firebaseAuth, testEmail, testPassword);
+                console.log("Test kullanıcısı giriş yaptı");
+            } catch (error) {
+                // Kullanıcı yoksa veya hata varsa, yeni kullanıcı oluşturma girişiminde bulunma
+                // Firebase'de test kullanıcısı manuel olarak oluşturulmalı
+                console.log("Test kullanıcısı girişi başarısız:", error.code);
+            }
         }
         
         // Event listener'ları kur
@@ -793,15 +898,22 @@
         }
         
         // Google ile giriş/kayıt
-        async function handleGoogleLogin() {
+        async function handleGoogleLogin(event) {
             if (!isFirebaseReady) {
                 showError("Sistem hazır değil. Lütfen bekleyin.");
                 return;
             }
             
+            // Localhost'ta domain uyarısı ver
+            if (isLocalhost) {
+                const continueAnyway = confirm("Google girişi için Firebase Console'da domain ayarları yapmanız gerekiyor.\n\nDevam etmek istiyor musunuz? (Hata alabilirsiniz)");
+                if (!continueAnyway) return;
+            }
+            
             try {
                 // Hangi butona tıklandığını belirle
-                const buttonId = event.target.id;
+                const buttonId = event.target.id || event.target.closest('button').id;
+                
                 if (buttonId === 'google-login-btn') {
                     showLoading('google-login-btn', true);
                 } else if (buttonId === 'google-register-btn') {
@@ -824,6 +936,8 @@
                     errorMessage = 'Giriş işlemi iptal edildi.';
                 } else if (error.code === 'auth/popup-blocked') {
                     errorMessage = 'Giriş penceresi engellendi. Lütfen popup engelleyiciyi devre dışı bırakın.';
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    errorMessage = 'Bu domain için Google girişi yetkilendirilmemiş. Firebase Console\'da domain ayarlarını yapın.';
                 }
                 
                 showError(errorMessage);
@@ -850,6 +964,10 @@
         
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
+            // Test kullanıcı bilgilerini otomatik doldur
+            document.getElementById('login-email').value = 'demo@test.com';
+            document.getElementById('login-password').value = 'demopass';
+            
             // Firebase'in yüklenmesini bekle
             const checkFirebase = setInterval(() => {
                 if (window.firebaseAuth && window.firebaseFunctions) {
