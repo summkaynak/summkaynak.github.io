@@ -5,68 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ÜMM Ekip - Talep Yönetim Sistemi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase SDK v9 (modüler) -->
-    <script type="module">
-        // Firebase modülleri
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword,
-            signOut,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { 
-            getFirestore,
-            collection,
-            addDoc,
-            getDocs,
-            updateDoc,
-            doc,
-            query,
-            where,
-            orderBy,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-        // Firebase yapılandırmanız
-        const firebaseConfig = {
-            apiKey: "AIzaSyB4QHRHk4tQWqRHkGJkD6vRqzibxwjHDaQ",
-            authDomain: "kaynak-cf02a.firebaseapp.com",
-            projectId: "kaynak-cf02a",
-            storageBucket: "kaynak-cf02a.firebasestorage.app",
-            messagingSenderId: "1034754005815",
-            appId: "1:1034754005815:web:6e5fe8c70fc5495b1218b2",
-            measurementId: "G-1CD0S6V0DL"
-        };
-
-        // Firebase'i başlat
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Global erişim için window nesnesine ekle
-        window.firebaseAuth = auth;
-        window.firebaseDb = db;
-        window.firebaseMethods = {
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signOut,
-            onAuthStateChanged,
-            addDoc,
-            getDocs,
-            updateDoc,
-            doc,
-            collection,
-            query,
-            where,
-            orderBy,
-            serverTimestamp
-        };
-
-        console.log("Firebase başlatıldı!");
-    </script>
     <style>
+        /* Tüm CSS stilleri buraya gelecek (önceki mesajdaki CSS'i buraya kopyalayın) */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -110,7 +50,7 @@
             border-radius: 15px;
             padding: 40px;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
         
@@ -197,6 +137,7 @@
             transition: all 0.3s ease;
             width: 100%;
             font-size: 1rem;
+            margin-top: 10px;
         }
         
         .btn-primary {
@@ -215,6 +156,45 @@
         
         .btn-secondary:hover {
             background-color: #e0e0e0;
+        }
+        
+        .btn-google {
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-google:hover {
+            background-color: #f8f8f8;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        
+        .btn-google i {
+            color: #DB4437;
+        }
+        
+        .auth-divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .auth-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #eee;
+        }
+        
+        .auth-divider span {
+            background-color: white;
+            padding: 0 15px;
         }
         
         .auth-error {
@@ -237,445 +217,6 @@
             display: none;
         }
         
-        /* Ana Uygulama Stilleri */
-        .app-container {
-            display: none;
-        }
-        
-        /* Header Stilleri */
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 0 0 10px 10px;
-            margin-bottom: 30px;
-        }
-        
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo i {
-            font-size: 2.5rem;
-        }
-        
-        .logo h1 {
-            font-size: 1.8rem;
-        }
-        
-        .logo span {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-        
-        .header-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 50px;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-            z-index: 100;
-            display: none;
-            margin-top: 10px;
-        }
-        
-        .user-dropdown.active {
-            display: block;
-        }
-        
-        .user-dropdown-item {
-            padding: 12px 15px;
-            color: #333;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background-color 0.3s ease;
-        }
-        
-        .user-dropdown-item:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .user-dropdown-divider {
-            height: 1px;
-            background-color: #eee;
-            margin: 5px 0;
-        }
-        
-        /* Ana İçerik */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 992px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Yan Menü */
-        .sidebar {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            height: fit-content;
-        }
-        
-        .sidebar h3 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--light-color);
-        }
-        
-        .menu {
-            list-style: none;
-        }
-        
-        .menu-item {
-            margin-bottom: 10px;
-        }
-        
-        .menu-item a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            color: #555;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .menu-item a:hover, .menu-item a.active {
-            background-color: var(--light-color);
-            color: var(--secondary-color);
-        }
-        
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* İstatistik Kartları */
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: transform 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: white;
-        }
-        
-        .stat-info h3 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-        
-        .stat-info p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        /* Talep Yönetimi Alanı */
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .section-header h2 {
-            color: var(--primary-color);
-        }
-        
-        .btn-sm {
-            padding: 8px 15px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-        
-        .btn-warning {
-            background-color: var(--warning-color);
-            color: white;
-        }
-        
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-        
-        /* Talep Listesi */
-        .requests-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        thead {
-            background-color: var(--light-color);
-        }
-        
-        th {
-            padding: 15px;
-            text-align: left;
-            color: var(--primary-color);
-            font-weight: 600;
-            border-bottom: 2px solid var(--light-color);
-        }
-        
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-        
-        /* Durum Etiketleri */
-        .status {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        .status-new {
-            background-color: #e3f2fd;
-            color: var(--secondary-color);
-        }
-        
-        .status-assigned {
-            background-color: #fff3e0;
-            color: var(--warning-color);
-        }
-        
-        .status-inprogress {
-            background-color: #e8f5e9;
-            color: var(--success-color);
-        }
-        
-        .status-completed {
-            background-color: #f1f8e9;
-            color: #689f38;
-        }
-        
-        /* Operatör Atama */
-        .assign-operator {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .assign-operator select {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            background-color: white;
-        }
-        
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-header h3 {
-            color: var(--primary-color);
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #999;
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        /* Footer */
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            border-top: 1px solid #eee;
-        }
-        
-        /* Mobil Uyumluluk */
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .stats-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            th, td {
-                padding: 10px 5px;
-                font-size: 0.9rem;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .auth-box {
-                padding: 30px 20px;
-                margin: 20px;
-            }
-        }
-        
-        /* Filtreleme */
-        .filters {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .filter-group label {
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .filter-group select {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            background-color: white;
-            min-width: 150px;
-        }
-        
         /* Yükleme Animasyonu */
         .loading {
             display: inline-block;
@@ -691,17 +232,31 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Veri yükleme göstergesi */
-        .data-loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
+        /* ... Diğer CSS kuralları önceki mesajdaki gibi devam edecek ... */
+        
+        /* Düzeltme: Yükleme butonları için */
+        .btn-loading {
+            position: relative;
         }
         
-        .data-loading i {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: var(--secondary-color);
+        .btn-loading .btn-text {
+            visibility: visible;
+        }
+        
+        .btn-loading.loading .btn-text {
+            visibility: hidden;
+        }
+        
+        .btn-loading .loading-spinner {
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .btn-loading.loading .loading-spinner {
+            display: block;
         }
     </style>
 </head>
@@ -734,9 +289,19 @@
                     <input type="password" id="login-password" placeholder="Parolanızı girin" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" id="login-btn">
-                    <span id="login-btn-text">Giriş Yap</span>
-                    <div class="loading" id="login-loading" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-loading" id="login-btn">
+                    <span class="btn-text">Giriş Yap</span>
+                    <div class="loading-spinner">
+                        <div class="loading"></div>
+                    </div>
+                </button>
+                
+                <div class="auth-divider">
+                    <span>veya</span>
+                </div>
+                
+                <button type="button" class="btn btn-google" id="google-login-btn">
+                    <i class="fab fa-google"></i> Google ile Giriş Yap
                 </button>
             </form>
             
@@ -762,15 +327,25 @@
                     <input type="password" id="register-password-confirm" placeholder="Parolanızı tekrar girin" minlength="6" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" id="register-btn">
-                    <span id="register-btn-text">Kayıt Ol</span>
-                    <div class="loading" id="register-loading" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-loading" id="register-btn">
+                    <span class="btn-text">Kayıt Ol</span>
+                    <div class="loading-spinner">
+                        <div class="loading"></div>
+                    </div>
+                </button>
+                
+                <div class="auth-divider">
+                    <span>veya</span>
+                </div>
+                
+                <button type="button" class="btn btn-google" id="google-register-btn">
+                    <i class="fab fa-google"></i> Google ile Kayıt Ol
                 </button>
             </form>
         </div>
     </div>
     
-    <!-- Ana Uygulama -->
+    <!-- Ana Uygulama (giriş yapıldığında gösterilecek) -->
     <div class="app-container" id="app-container">
         <header>
             <div class="container header-container">
@@ -784,7 +359,9 @@
                 <div class="header-info">
                     <div id="current-date" class="current-date"></div>
                     <div class="user-profile" id="user-profile">
-                        <i class="fas fa-user-circle"></i>
+                        <div class="user-avatar" id="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
                         <div>
                             <div class="user-name" id="user-name">Kullanıcı</div>
                             <div class="user-role" id="user-role">Operatör</div>
@@ -818,251 +395,227 @@
                         <li class="menu-item"><a href="#"><i class="fas fa-chart-bar"></i> İstatistikler</a></li>
                         <li class="menu-item"><a href="#"><i class="fas fa-cog"></i> Ayarlar</a></li>
                     </ul>
-                    
-                    <div style="margin-top: 30px;">
-                        <h3>Sistem İstatistikleri</h3>
-                        <div class="stats-cards" style="grid-template-columns: 1fr;">
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background-color: var(--secondary-color);">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                                <div class="stat-info">
-                                    <h3 id="avg-completion-time">0.0</h3>
-                                    <p>Ort. Tamamlanma Süresi (gün)</p>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon" style="background-color: var(--success-color);">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                                <div class="stat-info">
-                                    <h3 id="completed-tasks">0</h3>
-                                    <p>Bu Ay Tamamlanan İş</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </aside>
                 
                 <main class="main-content">
-                    <div class="stats-cards">
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: var(--secondary-color);">
-                                <i class="fas fa-inbox"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="total-requests">0</h3>
-                                <p>Toplam Talep</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: var(--warning-color);">
-                                <i class="fas fa-user-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="pending-requests">0</h3>
-                                <p>Bekleyen Talep</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: var(--success-color);">
-                                <i class="fas fa-spinner"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="inprogress-requests">0</h3>
-                                <p>Devam Eden İş</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: #9b59b6;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="total-operators">5</h3>
-                                <p>Operatör Sayısı</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="requests-container">
-                        <div class="section-header">
-                            <h2><i class="fas fa-list-alt"></i> Aktif Talepler</h2>
-                            <div class="filters">
-                                <div class="filter-group">
-                                    <label for="status-filter">Durum</label>
-                                    <select id="status-filter">
-                                        <option value="all">Tümü</option>
-                                        <option value="new">Yeni</option>
-                                        <option value="assigned">Atanmış</option>
-                                        <option value="inprogress">Devam Ediyor</option>
-                                        <option value="completed">Tamamlandı</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="unit-filter">Birim</label>
-                                    <select id="unit-filter">
-                                        <option value="all">Tümü</option>
-                                        <option value="Üretim">Üretim</option>
-                                        <option value="Kalite">Kalite</option>
-                                        <option value="Bakım">Bakım</option>
-                                        <option value="Depo">Depo</option>
-                                        <option value="İdari İşler">İdari İşler</option>
-                                    </select>
-                                </div>
-                                <button class="btn btn-primary" id="add-request-btn">
-                                    <i class="fas fa-plus"></i> Yeni Talep Ekle
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="table-container">
-                            <div id="data-loading" class="data-loading" style="display: none;">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Veriler yükleniyor...</p>
-                            </div>
-                            <table id="requests-table" style="display: none;">
-                                <thead>
-                                    <tr>
-                                        <th>Talep No</th>
-                                        <th>Talep Eden Birim</th>
-                                        <th>Talep Tarihi</th>
-                                        <th>Açıklama</th>
-                                        <th>Durum</th>
-                                        <th>Operatör</th>
-                                        <th>Tahmini Süre (gün)</th>
-                                        <th>İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="requests-list">
-                                    <!-- Talepler buraya dinamik olarak eklenecek -->
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="welcome-message">
+                        <h2>Hoş Geldiniz, <span id="welcome-name">Kullanıcı</span>!</h2>
+                        <p>Sistemi kullanmaya başlamak için soldaki menüden bir seçenek belirleyin.</p>
                     </div>
                 </main>
             </div>
         </div>
         
-        <!-- Talep Ekleme/Değiştirme Modal -->
-        <div id="request-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="modal-title">Yeni Talep Ekle</h3>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <form id="request-form">
-                        <div class="form-group">
-                            <label for="request-unit">Talep Eden Birim</label>
-                            <select id="request-unit" required>
-                                <option value="">Birim Seçiniz</option>
-                                <option value="Üretim">Üretim</option>
-                                <option value="Kalite Kontrol">Kalite Kontrol</option>
-                                <option value="Bakım Onarım">Bakım Onarım</option>
-                                <option value="Depo">Depo</option>
-                                <option value="İdari İşler">İdari İşler</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="request-description">Talep Açıklaması</label>
-                            <textarea id="request-description" placeholder="Talep detaylarını buraya yazın..." required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="request-urgency">Aciliyet Durumu</label>
-                            <select id="request-urgency" required>
-                                <option value="normal">Normal</option>
-                                <option value="yüksek">Yüksek</option>
-                                <option value="acil">Acil</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="request-estimated">Tahmini Tamamlanma Süresi (gün)</label>
-                            <input type="number" id="request-estimated" min="1" max="30" value="3" required>
-                        </div>
-                        
-                        <input type="hidden" id="request-id" value="">
-                        
-                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                            <button type="button" class="btn btn-secondary close-modal">İptal</button>
-                            <button type="submit" class="btn btn-primary" id="modal-submit-btn">Talep Ekle</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <!-- İş Başlatma Modal -->
-        <div id="start-job-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>İşi Başlat</h3>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="start-job-operator">Operatör Ataması</label>
-                        <select id="start-job-operator">
-                            <option value="">Operatör Seçiniz</option>
-                            <option value="Ahmet Yılmaz">Ahmet Yılmaz (Kaynak Uzmanı)</option>
-                            <option value="Mehmet Demir">Mehmet Demir (Talaşlı İmalat)</option>
-                            <option value="Ayşe Kaya">Ayşe Kaya (Montaj)</option>
-                            <option value="Mustafa Şahin">Mustafa Şahin (Kaynak)</option>
-                            <option value="Zeynep Arslan">Zeynep Arslan (Kalite Kontrol)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="start-job-notes">İş Notları (Opsiyonel)</label>
-                        <textarea id="start-job-notes" placeholder="İş ile ilgili notlar..."></textarea>
-                    </div>
-                    <input type="hidden" id="start-job-id" value="">
-                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                        <button type="button" class="btn btn-secondary close-modal">İptal</button>
-                        <button type="button" class="btn btn-success" id="confirm-start-job">İşi Başlat</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- İş Tamamlama Modal -->
-        <div id="complete-job-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>İşi Tamamla</h3>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="actual-days">Gerçekleşen Tamamlanma Süresi (gün)</label>
-                        <input type="number" id="actual-days" min="1" max="30" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="completion-notes">Tamamlama Notları</label>
-                        <textarea id="completion-notes" placeholder="İş tamamlama detayları..."></textarea>
-                    </div>
-                    <input type="hidden" id="complete-job-id" value="">
-                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                        <button type="button" class="btn btn-secondary close-modal">İptal</button>
-                        <button type="button" class="btn btn-success" id="confirm-complete-job">İşi Tamamla</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <footer>
             <div class="container">
-                <p>ÜMM Ekip Talep Yönetim Sistemi &copy; <span id="current-year"></span> - Tüm hakları saklıdır.</p>
-                <p style="font-size: 0.9rem; margin-top: 5px;">Mobil uyumlu, anlık talep takibi ve operatör yönetimi</p>
+                <p>ÜMM Ekip Talep Yönetim Sistemi &copy; <span id="current-year"></span></p>
             </div>
         </footer>
     </div>
 
+    <!-- Firebase SDK'ları -->
+    <script type="module">
+        // Firebase modülleri
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged,
+            GoogleAuthProvider,
+            signInWithPopup
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        
+        // Firebase yapılandırmanız
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4QHRHk4tQWqRHkGJkD6vRqzibxwjHDaQ",
+            authDomain: "kaynak-cf02a.firebaseapp.com",
+            projectId: "kaynak-cf02a",
+            storageBucket: "kaynak-cf02a.firebasestorage.app",
+            messagingSenderId: "1034754005815",
+            appId: "1:1034754005815:web:6e5fe8c70fc5495b1218b2",
+            measurementId: "G-1CD0S6V0DL"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        console.log("Firebase başlatıldı!");
+        
+        // Global erişim için
+        window.firebaseAuth = auth;
+        window.googleProvider = googleProvider;
+        window.firebaseFunctions = {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged,
+            signInWithPopup
+        };
+        
+        // Firebase hazır olduğunda
+        setTimeout(() => {
+            initApp();
+        }, 1000);
+    </script>
+
     <script>
         // Global değişkenler
         let currentUser = null;
-        let requests = [];
+        let isFirebaseReady = false;
+        
+        // Uygulamayı başlat
+        function initApp() {
+            isFirebaseReady = true;
+            console.log("Firebase hazır!");
+            
+            // Firebase authentication durum takibi
+            if (window.firebaseAuth && window.firebaseFunctions) {
+                const { onAuthStateChanged } = window.firebaseFunctions;
+                
+                onAuthStateChanged(window.firebaseAuth, (user) => {
+                    if (user) {
+                        // Kullanıcı giriş yapmış
+                        currentUser = user;
+                        showApp();
+                    } else {
+                        // Kullanıcı çıkış yapmış
+                        currentUser = null;
+                        showAuth();
+                    }
+                });
+            }
+            
+            // Event listener'ları ekle
+            setupEventListeners();
+        }
+        
+        // Event listener'ları kur
+        function setupEventListeners() {
+            // Tab değiştirme
+            document.getElementById('login-tab').addEventListener('click', function() {
+                switchToLoginTab();
+            });
+            
+            document.getElementById('register-tab').addEventListener('click', function() {
+                switchToRegisterTab();
+            });
+            
+            // Giriş formu
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+            
+            // Kayıt formu
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegister);
+            }
+            
+            // Google giriş butonları
+            const googleLoginBtn = document.getElementById('google-login-btn');
+            if (googleLoginBtn) {
+                googleLoginBtn.addEventListener('click', handleGoogleLogin);
+            }
+            
+            const googleRegisterBtn = document.getElementById('google-register-btn');
+            if (googleRegisterBtn) {
+                googleRegisterBtn.addEventListener('click', handleGoogleLogin);
+            }
+            
+            // Çıkış yap
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+            
+            // Kullanıcı dropdown menüsü
+            const userProfile = document.getElementById('user-profile');
+            if (userProfile) {
+                userProfile.addEventListener('click', function() {
+                    document.getElementById('user-dropdown').classList.toggle('active');
+                });
+            }
+            
+            // Tarih güncellemesi
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+            
+            // Yıl bilgisi
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        }
+        
+        // Tab değiştirme fonksiyonları
+        function switchToLoginTab() {
+            document.getElementById('login-tab').classList.add('active');
+            document.getElementById('register-tab').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
+            document.getElementById('register-form').classList.remove('active');
+            clearAuthMessages();
+        }
+        
+        function switchToRegisterTab() {
+            document.getElementById('register-tab').classList.add('active');
+            document.getElementById('login-tab').classList.remove('active');
+            document.getElementById('register-form').classList.add('active');
+            document.getElementById('login-form').classList.remove('active');
+            clearAuthMessages();
+        }
+        
+        // Hata göster
+        function showError(message) {
+            const errorElement = document.getElementById('auth-error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                
+                // 5 saniye sonra gizle
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Başarı mesajı göster
+        function showSuccess(message) {
+            const successElement = document.getElementById('auth-success');
+            if (successElement) {
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                
+                // 3 saniye sonra gizle
+                setTimeout(() => {
+                    successElement.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // Mesajları temizle
+        function clearAuthMessages() {
+            const errorElement = document.getElementById('auth-error');
+            const successElement = document.getElementById('auth-success');
+            
+            if (errorElement) errorElement.style.display = 'none';
+            if (successElement) successElement.style.display = 'none';
+        }
+        
+        // Yükleme durumunu göster
+        function showLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (!button) return;
+            
+            if (isLoading) {
+                button.classList.add('loading');
+                button.disabled = true;
+            } else {
+                button.classList.remove('loading');
+                button.disabled = false;
+            }
+        }
         
         // Tarih ve saat güncelleme
         function updateDateTime() {
@@ -1087,34 +640,6 @@
             }
         }
         
-        // Yıl bilgisi
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        // Firebase authentication durum takibi
-        function initAuth() {
-            if (!window.firebaseAuth) {
-                console.error("Firebase Auth henüz yüklenmedi!");
-                setTimeout(initAuth, 500);
-                return;
-            }
-            
-            const auth = window.firebaseAuth;
-            const { onAuthStateChanged } = window.firebaseMethods;
-            
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    // Kullanıcı giriş yapmış
-                    currentUser = user;
-                    showApp();
-                    loadRequestsFromFirestore();
-                } else {
-                    // Kullanıcı çıkış yapmış
-                    currentUser = null;
-                    showAuth();
-                }
-            });
-        }
-        
         // Uygulamayı göster
         function showApp() {
             document.getElementById('auth-container').style.display = 'none';
@@ -1122,80 +647,48 @@
             
             // Kullanıcı bilgilerini güncelle
             if (currentUser) {
-                document.getElementById('user-name').textContent = currentUser.displayName || currentUser.email.split('@')[0];
+                const userName = currentUser.displayName || currentUser.email.split('@')[0];
+                const userEmail = currentUser.email;
+                
+                document.getElementById('user-name').textContent = userName;
+                document.getElementById('welcome-name').textContent = userName;
                 document.getElementById('user-role').textContent = "Operatör";
+                
+                // Avatar
+                const avatarElement = document.getElementById('user-avatar');
+                if (currentUser.photoURL) {
+                    avatarElement.innerHTML = `<img src="${currentUser.photoURL}" alt="${userName}">`;
+                } else {
+                    const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+                    avatarElement.innerHTML = `<span>${initials.substring(0, 2)}</span>`;
+                }
+                
+                console.log("Kullanıcı giriş yaptı:", userEmail);
             }
-            
-            // Tarih güncellemesini başlat
-            updateDateTime();
-            setInterval(updateDateTime, 60000);
         }
         
         // Giriş ekranını göster
         function showAuth() {
             document.getElementById('auth-container').style.display = 'flex';
             document.getElementById('app-container').style.display = 'none';
-        }
-        
-        // Hata göster
-        function showError(message, elementId = 'auth-error') {
-            const errorElement = document.getElementById(elementId);
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
+            clearAuthMessages();
             
-            // 5 saniye sonra gizle
-            setTimeout(() => {
-                errorElement.style.display = 'none';
-            }, 5000);
-        }
-        
-        // Başarı mesajı göster
-        function showSuccess(message, elementId = 'auth-success') {
-            const successElement = document.getElementById(elementId);
-            successElement.textContent = message;
-            successElement.style.display = 'block';
+            // Formları temizle
+            document.getElementById('login-form').reset();
+            document.getElementById('register-form').reset();
             
-            // 3 saniye sonra gizle
-            setTimeout(() => {
-                successElement.style.display = 'none';
-            }, 3000);
+            // Login tab'ına geç
+            switchToLoginTab();
         }
         
-        // Yükleme durumunu göster
-        function showLoading(buttonId, isLoading) {
-            const button = document.getElementById(buttonId);
-            const loadingElement = document.getElementById(buttonId + '-loading');
-            const textElement = document.getElementById(buttonId + '-text');
-            
-            if (isLoading) {
-                loadingElement.style.display = 'inline-block';
-                textElement.style.display = 'none';
-                button.disabled = true;
-            } else {
-                loadingElement.style.display = 'none';
-                textElement.style.display = 'inline';
-                button.disabled = false;
-            }
-        }
-        
-        // Tab değiştirme
-        document.getElementById('login-tab').addEventListener('click', function() {
-            document.getElementById('login-tab').classList.add('active');
-            document.getElementById('register-tab').classList.remove('active');
-            document.getElementById('login-form').classList.add('active');
-            document.getElementById('register-form').classList.remove('active');
-        });
-        
-        document.getElementById('register-tab').addEventListener('click', function() {
-            document.getElementById('register-tab').classList.add('active');
-            document.getElementById('login-tab').classList.remove('active');
-            document.getElementById('register-form').classList.add('active');
-            document.getElementById('login-form').classList.remove('active');
-        });
-        
-        // Giriş formu
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+        // E-posta/parola ile giriş
+        async function handleLogin(e) {
             e.preventDefault();
+            
+            if (!isFirebaseReady) {
+                showError("Sistem hazır değil. Lütfen bekleyin.");
+                return;
+            }
             
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -1207,7 +700,8 @@
             
             try {
                 showLoading('login-btn', true);
-                const { signInWithEmailAndPassword } = window.firebaseMethods;
+                
+                const { signInWithEmailAndPassword } = window.firebaseFunctions;
                 await signInWithEmailAndPassword(window.firebaseAuth, email, password);
                 
                 showSuccess('Giriş başarılı!');
@@ -1221,23 +715,31 @@
                     errorMessage = 'Hatalı parola.';
                 } else if (error.code === 'auth/invalid-email') {
                     errorMessage = 'Geçersiz e-posta adresi.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.';
                 }
                 
                 showError(errorMessage);
             } finally {
                 showLoading('login-btn', false);
             }
-        });
+        }
         
-        // Kayıt formu
-        document.getElementById('register-form').addEventListener('submit', async function(e) {
+        // E-posta/parola ile kayıt
+        async function handleRegister(e) {
             e.preventDefault();
+            
+            if (!isFirebaseReady) {
+                showError("Sistem hazır değil. Lütfen bekleyin.");
+                return;
+            }
             
             const name = document.getElementById('register-name').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const passwordConfirm = document.getElementById('register-password-confirm').value;
             
+            // Validasyon
             if (!name || !email || !password || !passwordConfirm) {
                 showError('Lütfen tüm alanları doldurun.');
                 return;
@@ -1255,7 +757,8 @@
             
             try {
                 showLoading('register-btn', true);
-                const { createUserWithEmailAndPassword } = window.firebaseMethods;
+                
+                const { createUserWithEmailAndPassword } = window.firebaseFunctions;
                 const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
                 
                 // Kullanıcı adını güncelle
@@ -1266,9 +769,8 @@
                 showSuccess('Kayıt başarılı! Giriş yapabilirsiniz.');
                 
                 // Giriş tab'ına geç
-                document.getElementById('login-tab').click();
+                switchToLoginTab();
                 document.getElementById('login-email').value = email;
-                document.getElementById('register-form').reset();
                 
             } catch (error) {
                 console.error('Kayıt hatası:', error);
@@ -1280,456 +782,89 @@
                     errorMessage = 'Geçersiz e-posta adresi.';
                 } else if (error.code === 'auth/weak-password') {
                     errorMessage = 'Parola çok zayıf. Daha güçlü bir parola seçin.';
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    errorMessage = 'E-posta/parola ile kayıt şu anda devre dışı.';
                 }
                 
                 showError(errorMessage);
             } finally {
                 showLoading('register-btn', false);
             }
-        });
+        }
+        
+        // Google ile giriş/kayıt
+        async function handleGoogleLogin() {
+            if (!isFirebaseReady) {
+                showError("Sistem hazır değil. Lütfen bekleyin.");
+                return;
+            }
+            
+            try {
+                // Hangi butona tıklandığını belirle
+                const buttonId = event.target.id;
+                if (buttonId === 'google-login-btn') {
+                    showLoading('google-login-btn', true);
+                } else if (buttonId === 'google-register-btn') {
+                    showLoading('google-register-btn', true);
+                }
+                
+                const { signInWithPopup } = window.firebaseFunctions;
+                const result = await signInWithPopup(window.firebaseAuth, window.googleProvider);
+                
+                console.log("Google ile giriş başarılı:", result.user);
+                showSuccess('Google ile giriş başarılı!');
+                
+            } catch (error) {
+                console.error('Google giriş hatası:', error);
+                
+                let errorMessage = 'Google ile giriş yapılırken bir hata oluştu.';
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Giriş penceresi kapatıldı.';
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    errorMessage = 'Giriş işlemi iptal edildi.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMessage = 'Giriş penceresi engellendi. Lütfen popup engelleyiciyi devre dışı bırakın.';
+                }
+                
+                showError(errorMessage);
+            } finally {
+                // Tüm Google butonlarının yükleme durumunu sıfırla
+                showLoading('google-login-btn', false);
+                showLoading('google-register-btn', false);
+            }
+        }
         
         // Çıkış yap
-        document.getElementById('logout-btn').addEventListener('click', async function(e) {
+        async function handleLogout(e) {
             e.preventDefault();
             
             try {
-                const { signOut } = window.firebaseMethods;
+                const { signOut } = window.firebaseFunctions;
                 await signOut(window.firebaseAuth);
                 showSuccess('Çıkış yapıldı.');
             } catch (error) {
                 console.error('Çıkış hatası:', error);
                 showError('Çıkış yapılırken bir hata oluştu.');
             }
-        });
-        
-        // Kullanıcı dropdown menüsü
-        document.getElementById('user-profile').addEventListener('click', function() {
-            document.getElementById('user-dropdown').classList.toggle('active');
-        });
-        
-        // Firestore'dan talepleri yükle
-        async function loadRequestsFromFirestore() {
-            try {
-                document.getElementById('data-loading').style.display = 'block';
-                document.getElementById('requests-table').style.display = 'none';
-                
-                const { getDocs, collection, query, orderBy } = window.firebaseMethods;
-                const requestsRef = collection(window.firebaseDb, 'requests');
-                const q = query(requestsRef, orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
-                
-                requests = [];
-                querySnapshot.forEach((doc) => {
-                    const requestData = doc.data();
-                    requests.push({
-                        id: doc.id,
-                        ...requestData
-                    });
-                });
-                
-                updateRequestsList();
-                document.getElementById('data-loading').style.display = 'none';
-                document.getElementById('requests-table').style.display = 'table';
-                
-            } catch (error) {
-                console.error('Talepler yüklenirken hata:', error);
-                showError('Talepler yüklenirken bir hata oluştu.', 'auth-error');
-                document.getElementById('data-loading').style.display = 'none';
-                
-                // Örnek verilerle devam et
-                loadSampleData();
-            }
         }
         
-        // Örnek veriler (Firestore bağlantısı başarısız olursa)
-        function loadSampleData() {
-            requests = [
-                {
-                    id: 'sample1',
-                    requestNumber: 1001,
-                    unit: "Üretim",
-                    date: "2023-10-15",
-                    description: "Kaynak makinesi contası değişimi",
-                    status: "new",
-                    operator: "",
-                    estimatedDays: 2,
-                    actualDays: null,
-                    startDate: null,
-                    completionDate: null,
-                    urgency: "yüksek",
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 'sample2',
-                    requestNumber: 1002,
-                    unit: "Kalite",
-                    date: "2023-10-14",
-                    description: "Ölçüm aleti kalibrasyonu",
-                    status: "assigned",
-                    operator: "Ahmet Yılmaz",
-                    estimatedDays: 3,
-                    actualDays: null,
-                    startDate: "2023-10-15",
-                    completionDate: null,
-                    urgency: "normal",
-                    createdAt: new Date().toISOString()
-                }
-            ];
-            
-            updateRequestsList();
-            document.getElementById('requests-table').style.display = 'table';
-        }
-        
-        // Talep listesini güncelle
-        function updateRequestsList() {
-            const tbody = document.getElementById('requests-list');
-            tbody.innerHTML = '';
-            
-            // Filtreleme
-            const statusFilter = document.getElementById('status-filter').value;
-            const unitFilter = document.getElementById('unit-filter').value;
-            
-            let filteredRequests = requests;
-            
-            if (statusFilter !== 'all') {
-                filteredRequests = filteredRequests.filter(req => req.status === statusFilter);
-            }
-            
-            if (unitFilter !== 'all') {
-                filteredRequests = filteredRequests.filter(req => req.unit === unitFilter);
-            }
-            
-            filteredRequests.forEach(request => {
-                const status = getStatusInfo(request.status);
-                const row = document.createElement('tr');
-                
-                // İşlem butonlarını duruma göre belirle
-                let actionButtons = '';
-                
-                if (request.status === 'new') {
-                    actionButtons = `
-                        <button class="btn btn-primary btn-sm start-job" data-id="${request.id}">
-                            <i class="fas fa-play"></i> Başlat
-                        </button>
-                    `;
-                } else if (request.status === 'assigned') {
-                    actionButtons = `
-                        <button class="btn btn-success btn-sm start-job" data-id="${request.id}">
-                            <i class="fas fa-play"></i> İşe Başla
-                        </button>
-                    `;
-                } else if (request.status === 'inprogress') {
-                    // İş devam ediyorsa tamamlanma süresini hesapla
-                    let daysPassed = 0;
-                    if (request.startDate) {
-                        const start = new Date(request.startDate);
-                        const now = new Date();
-                        const diffTime = Math.abs(now - start);
-                        daysPassed = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    }
-                    
-                    actionButtons = `
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <span><strong>${daysPassed} gündür devam ediyor</strong></span>
-                            <button class="btn btn-success btn-sm complete-job" data-id="${request.id}">
-                                <i class="fas fa-check"></i> Tamamla
-                            </button>
-                        </div>
-                    `;
-                } else if (request.status === 'completed') {
-                    actionButtons = `
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <span><strong>${request.actualDays} günde tamamlandı</strong></span>
-                            <span>Tahmin: ${request.estimatedDays} gün</span>
-                        </div>
-                    `;
-                }
-                
-                row.innerHTML = `
-                    <td>${request.requestNumber || request.id}</td>
-                    <td>${request.unit}</td>
-                    <td>${formatDate(request.date)}</td>
-                    <td>${request.description}</td>
-                    <td><span class="status ${status.class}">${status.text}</span></td>
-                    <td>${request.operator || "-"}</td>
-                    <td>${request.estimatedDays}</td>
-                    <td>${actionButtons}</td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-            
-            // İstatistikleri güncelle
-            updateStats();
-            
-            // Buton event listener'larını ekle
-            document.querySelectorAll('.start-job').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const requestId = this.getAttribute('data-id');
-                    openStartJobModal(requestId);
-                });
-            });
-            
-            document.querySelectorAll('.complete-job').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const requestId = this.getAttribute('data-id');
-                    openCompleteJobModal(requestId);
-                });
-            });
-        }
-        
-        // Durum bilgilerini al
-        function getStatusInfo(status) {
-            const statusMap = {
-                "new": { text: "Yeni Talep", class: "status-new" },
-                "assigned": { text: "Operatör Atandı", class: "status-assigned" },
-                "inprogress": { text: "Devam Ediyor", class: "status-inprogress" },
-                "completed": { text: "Tamamlandı", class: "status-completed" }
-            };
-            
-            return statusMap[status] || { text: status, class: "status-new" };
-        }
-        
-        // İstatistikleri güncelle
-        function updateStats() {
-            const totalRequests = requests.length;
-            const pendingRequests = requests.filter(req => req.status === 'new').length;
-            const inprogressRequests = requests.filter(req => req.status === 'inprogress').length;
-            const completedRequests = requests.filter(req => req.status === 'completed').length;
-            
-            // Ortalama tamamlanma süresini hesapla
-            const completedTasks = requests.filter(req => req.status === 'completed');
-            const avgCompletionTime = completedTasks.length > 0 
-                ? (completedTasks.reduce((sum, req) => sum + (req.actualDays || 0), 0) / completedTasks.length).toFixed(1)
-                : "0.0";
-            
-            document.getElementById('total-requests').textContent = totalRequests;
-            document.getElementById('pending-requests').textContent = pendingRequests;
-            document.getElementById('inprogress-requests').textContent = inprogressRequests;
-            document.getElementById('completed-tasks').textContent = completedRequests;
-            document.getElementById('avg-completion-time').textContent = avgCompletionTime;
-        }
-        
-        // Tarih formatı
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            
-            try {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('tr-TR');
-            } catch (e) {
-                return dateStr;
-            }
-        }
-        
-        // Modal işlemleri
-        const modals = document.querySelectorAll('.modal');
-        const closeModalButtons = document.querySelectorAll('.close-modal');
-        const addRequestBtn = document.getElementById('add-request-btn');
-        const requestModal = document.getElementById('request-modal');
-        const startJobModal = document.getElementById('start-job-modal');
-        const completeJobModal = document.getElementById('complete-job-modal');
-        
-        // Modal açma/kapama fonksiyonları
-        function openModal(modal) {
-            modal.style.display = 'flex';
-        }
-        
-        function closeAllModals() {
-            modals.forEach(modal => {
-                modal.style.display = 'none';
-            });
-        }
-        
-        // Modal event listener'ları
-        closeModalButtons.forEach(btn => {
-            btn.addEventListener('click', closeAllModals);
-        });
-        
-        modals.forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeAllModals();
-                }
-            });
-        });
-        
-        // Yeni talep ekleme
-        addRequestBtn.addEventListener('click', function() {
-            document.getElementById('modal-title').textContent = 'Yeni Talep Ekle';
-            document.getElementById('modal-submit-btn').textContent = 'Talep Ekle';
-            document.getElementById('request-form').reset();
-            document.getElementById('request-id').value = '';
-            openModal(requestModal);
-        });
-        
-        // Talep formu submit
-        document.getElementById('request-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            if (!currentUser) {
-                showError('Lütfen önce giriş yapın.', 'auth-error');
-                closeAllModals();
-                return;
-            }
-            
-            const unit = document.getElementById('request-unit').value;
-            const description = document.getElementById('request-description').value;
-            const estimatedDays = parseInt(document.getElementById('request-estimated').value);
-            const urgency = document.getElementById('request-urgency').value;
-            
-            if (!unit || !description || !estimatedDays) {
-                showError('Lütfen tüm alanları doldurun.', 'auth-error');
-                return;
-            }
-            
-            try {
-                const { addDoc, collection, serverTimestamp } = window.firebaseMethods;
-                const requestsRef = collection(window.firebaseDb, 'requests');
-                
-                // Yeni talep numarası oluştur
-                const requestNumber = requests.length > 0 
-                    ? Math.max(...requests.map(req => req.requestNumber || 0)) + 1 
-                    : 1001;
-                
-                const newRequest = {
-                    requestNumber,
-                    unit,
-                    description,
-                    estimatedDays,
-                    urgency,
-                    status: "new",
-                    operator: "",
-                    actualDays: null,
-                    startDate: null,
-                    completionDate: null,
-                    createdBy: currentUser.email,
-                    createdAt: serverTimestamp(),
-                    date: new Date().toISOString().split('T')[0]
-                };
-                
-                await addDoc(requestsRef, newRequest);
-                
-                showSuccess('Talep başarıyla eklendi!');
-                closeAllModals();
-                loadRequestsFromFirestore();
-                
-            } catch (error) {
-                console.error('Talep ekleme hatası:', error);
-                showError('Talep eklenirken bir hata oluştu.', 'auth-error');
-            }
-        });
-        
-        // İş başlatma modal'ını aç
-        function openStartJobModal(requestId) {
-            document.getElementById('start-job-id').value = requestId;
-            
-            // Talep bilgilerini doldur
-            const request = requests.find(req => req.id === requestId);
-            if (request && request.operator) {
-                document.getElementById('start-job-operator').value = request.operator;
-            }
-            
-            openModal(startJobModal);
-        }
-        
-        // İş başlatma onayı
-        document.getElementById('confirm-start-job').addEventListener('click', async function() {
-            const requestId = document.getElementById('start-job-id').value;
-            const operator = document.getElementById('start-job-operator').value;
-            const notes = document.getElementById('start-job-notes').value;
-            
-            if (!operator) {
-                showError('Lütfen bir operatör seçin!', 'auth-error');
-                return;
-            }
-            
-            try {
-                const { updateDoc, doc } = window.firebaseMethods;
-                const requestRef = doc(window.firebaseDb, 'requests', requestId);
-                
-                const updateData = {
-                    operator,
-                    startDate: new Date().toISOString().split('T')[0],
-                    status: 'inprogress'
-                };
-                
-                // Eğer not eklendiyse
-                if (notes) {
-                    updateData.notes = notes;
-                }
-                
-                await updateDoc(requestRef, updateData);
-                
-                showSuccess('İş başlatıldı!');
-                closeAllModals();
-                loadRequestsFromFirestore();
-                
-            } catch (error) {
-                console.error('İş başlatma hatası:', error);
-                showError('İş başlatılırken bir hata oluştu.', 'auth-error');
-            }
-        });
-        
-        // İş tamamlama modal'ını aç
-        function openCompleteJobModal(requestId) {
-            document.getElementById('complete-job-id').value = requestId;
-            
-            // Talep bilgilerini doldur
-            const request = requests.find(req => req.id === requestId);
-            if (request) {
-                document.getElementById('actual-days').value = request.estimatedDays || 3;
-            }
-            
-            openModal(completeJobModal);
-        }
-        
-        // İş tamamlama onayı
-        document.getElementById('confirm-complete-job').addEventListener('click', async function() {
-            const requestId = document.getElementById('complete-job-id').value;
-            const actualDays = parseInt(document.getElementById('actual-days').value);
-            const notes = document.getElementById('completion-notes').value;
-            
-            if (!actualDays || actualDays < 1) {
-                showError('Lütfen geçerli bir tamamlanma süresi girin!', 'auth-error');
-                return;
-            }
-            
-            try {
-                const { updateDoc, doc } = window.firebaseMethods;
-                const requestRef = doc(window.firebaseDb, 'requests', requestId);
-                
-                const updateData = {
-                    status: 'completed',
-                    actualDays,
-                    completionDate: new Date().toISOString().split('T')[0]
-                };
-                
-                // Eğer not eklendiyse
-                if (notes) {
-                    updateData.completionNotes = notes;
-                }
-                
-                await updateDoc(requestRef, updateData);
-                
-                showSuccess('İş tamamlandı!');
-                closeAllModals();
-                loadRequestsFromFirestore();
-                
-            } catch (error) {
-                console.error('İş tamamlama hatası:', error);
-                showError('İş tamamlanırken bir hata oluştu.', 'auth-error');
-            }
-        });
-        
-        // Filtreleme event listener'ları
-        document.getElementById('status-filter').addEventListener('change', updateRequestsList);
-        document.getElementById('unit-filter').addEventListener('change', updateRequestsList);
-        
-        // Sayfa yüklendiğinde Firebase'i başlat
+        // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
-            // Firebase modüllerinin yüklenmesini bekle
-            setTimeout(initAuth, 1000);
+            // Firebase'in yüklenmesini bekle
+            const checkFirebase = setInterval(() => {
+                if (window.firebaseAuth && window.firebaseFunctions) {
+                    clearInterval(checkFirebase);
+                    initApp();
+                }
+            }, 500);
+            
+            // 10 saniye sonra zaman aşımı
+            setTimeout(() => {
+                if (!isFirebaseReady) {
+                    showError("Firebase yüklenemedi. Lütfen sayfayı yenileyin.");
+                    console.error("Firebase yüklenemedi!");
+                }
+            }, 10000);
         });
     </script>
 </body>
