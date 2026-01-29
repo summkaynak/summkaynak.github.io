@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        /* Tüm stiller */
+        /* Tüm stiller önceki kodda olduğu gibi aynen kalacak */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -1346,7 +1346,7 @@
                     <input type="hidden" id="delete-type" value="">
                     <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
                         <button type="button" class="btn btn-secondary close-modal">İptal</button>
-                        <button type="button" class="btn btn-danger" id="confirm-delete">Sil</button>
+                            <button type="button" class="btn btn-danger" id="confirm-delete">Sil</button>
                     </div>
                 </div>
             </div>
@@ -1387,13 +1387,13 @@
         // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
             // Set current year
-            document.getElementById('current-year').textContent = new Date().getFullYear();
+            const currentYearElement = document.getElementById('current-year');
+            if (currentYearElement) {
+                currentYearElement.textContent = new Date().getFullYear();
+            }
             
             // Initialize authentication state listener
             initAuth();
-            
-            // Setup event listeners
-            setupEventListeners();
         });
 
         // Initialize authentication
@@ -1415,32 +1415,66 @@
         // Setup all event listeners
         function setupEventListeners() {
             // Auth tab switching
-            document.getElementById('login-tab').addEventListener('click', switchToLoginTab);
-            document.getElementById('register-tab').addEventListener('click', switchToRegisterTab);
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            
+            if (loginTab) loginTab.addEventListener('click', switchToLoginTab);
+            if (registerTab) registerTab.addEventListener('click', switchToRegisterTab);
             
             // Auth forms
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('register-form').addEventListener('submit', handleRegister);
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (loginForm) loginForm.addEventListener('submit', handleLogin);
+            if (registerForm) registerForm.addEventListener('submit', handleRegister);
             
             // Google login buttons
-            document.getElementById('google-login-btn').addEventListener('click', handleGoogleLogin);
-            document.getElementById('google-register-btn').addEventListener('click', handleGoogleLogin);
+            const googleLoginBtn = document.getElementById('google-login-btn');
+            const googleRegisterBtn = document.getElementById('google-register-btn');
             
-            // App menu
-            document.getElementById('menu-dashboard').addEventListener('click', showDashboard);
-            document.getElementById('menu-requests').addEventListener('click', showAllRequests);
-            document.getElementById('menu-operators').addEventListener('click', showOperators);
-            document.getElementById('menu-stats').addEventListener('click', showStats);
+            if (googleLoginBtn) googleLoginBtn.addEventListener('click', handleGoogleLogin);
+            if (googleRegisterBtn) googleRegisterBtn.addEventListener('click', handleGoogleLogin);
+            
+            // App menu - SAFE ACCESS
+            const menuDashboard = document.getElementById('menu-dashboard');
+            const menuRequests = document.getElementById('menu-requests');
+            const menuOperators = document.getElementById('menu-operators');
+            const menuStats = document.getElementById('menu-stats');
+            
+            if (menuDashboard) menuDashboard.addEventListener('click', function(e) {
+                e.preventDefault();
+                showDashboard();
+            });
+            
+            if (menuRequests) menuRequests.addEventListener('click', function(e) {
+                e.preventDefault();
+                showAllRequests();
+            });
+            
+            if (menuOperators) menuOperators.addEventListener('click', function(e) {
+                e.preventDefault();
+                showOperators();
+            });
+            
+            if (menuStats) menuStats.addEventListener('click', function(e) {
+                e.preventDefault();
+                showStats();
+            });
             
             // Add request button
-            document.getElementById('add-request-btn').addEventListener('click', openAddRequestModal);
+            const addRequestBtn = document.getElementById('add-request-btn');
+            if (addRequestBtn) addRequestBtn.addEventListener('click', openAddRequestModal);
             
             // Add operator button
-            document.getElementById('add-operator-btn').addEventListener('click', openAddOperatorModal);
+            const addOperatorBtn = document.getElementById('add-operator-btn');
+            if (addOperatorBtn) addOperatorBtn.addEventListener('click', openAddOperatorModal);
             
             // Forms
-            document.getElementById('request-form').addEventListener('submit', handleRequestSubmit);
-            document.getElementById('operator-form').addEventListener('submit', handleOperatorSubmit);
+            const requestForm = document.getElementById('request-form');
+            const operatorForm = document.getElementById('operator-form');
+            
+            if (requestForm) requestForm.addEventListener('submit', handleRequestSubmit);
+            if (operatorForm) operatorForm.addEventListener('submit', handleOperatorSubmit);
             
             // Modals
             document.querySelectorAll('.close-modal').forEach(btn => {
@@ -1456,24 +1490,41 @@
             });
             
             // Actions
-            document.getElementById('confirm-start-job').addEventListener('click', handleStartJob);
-            document.getElementById('confirm-complete-job').addEventListener('click', handleCompleteJob);
-            document.getElementById('confirm-delete').addEventListener('click', handleDelete);
+            const confirmStartJob = document.getElementById('confirm-start-job');
+            const confirmCompleteJob = document.getElementById('confirm-complete-job');
+            const confirmDelete = document.getElementById('confirm-delete');
+            
+            if (confirmStartJob) confirmStartJob.addEventListener('click', handleStartJob);
+            if (confirmCompleteJob) confirmCompleteJob.addEventListener('click', handleCompleteJob);
+            if (confirmDelete) confirmDelete.addEventListener('click', handleDelete);
             
             // Filters
-            document.getElementById('status-filter').addEventListener('change', updateRequestsList);
-            document.getElementById('unit-filter').addEventListener('change', updateRequestsList);
-            document.getElementById('operator-status-filter').addEventListener('change', updateOperatorsList);
-            document.getElementById('operator-specialty-filter').addEventListener('change', updateOperatorsList);
-            document.getElementById('stats-period').addEventListener('change', updateStatistics);
+            const statusFilter = document.getElementById('status-filter');
+            const unitFilter = document.getElementById('unit-filter');
+            const operatorStatusFilter = document.getElementById('operator-status-filter');
+            const operatorSpecialtyFilter = document.getElementById('operator-specialty-filter');
+            const statsPeriod = document.getElementById('stats-period');
+            
+            if (statusFilter) statusFilter.addEventListener('change', updateRequestsList);
+            if (unitFilter) unitFilter.addEventListener('change', updateRequestsList);
+            if (operatorStatusFilter) operatorStatusFilter.addEventListener('change', updateOperatorsList);
+            if (operatorSpecialtyFilter) operatorSpecialtyFilter.addEventListener('change', updateOperatorsList);
+            if (statsPeriod) statsPeriod.addEventListener('change', updateStatistics);
             
             // Logout
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
             
             // User profile dropdown
-            document.getElementById('user-profile').addEventListener('click', function() {
-                document.getElementById('user-dropdown').classList.toggle('active');
-            });
+            const userProfile = document.getElementById('user-profile');
+            if (userProfile) {
+                userProfile.addEventListener('click', function() {
+                    const dropdown = document.getElementById('user-dropdown');
+                    if (dropdown) {
+                        dropdown.classList.toggle('active');
+                    }
+                });
+            }
             
             // Update date/time
             updateDateTime();
@@ -1482,12 +1533,18 @@
 
         // Show authentication screen
         function showAuth() {
-            document.getElementById('auth-container').style.display = 'flex';
-            document.getElementById('app-container').style.display = 'none';
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.getElementById('app-container');
+            
+            if (authContainer) authContainer.style.display = 'flex';
+            if (appContainer) appContainer.style.display = 'none';
             
             // Clear forms
-            document.getElementById('login-form').reset();
-            document.getElementById('register-form').reset();
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (loginForm) loginForm.reset();
+            if (registerForm) registerForm.reset();
             
             // Clear messages
             clearAuthMessages();
@@ -1498,68 +1555,96 @@
 
         // Show application
         function showApp() {
-            document.getElementById('auth-container').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.getElementById('app-container');
+            
+            if (authContainer) authContainer.style.display = 'none';
+            if (appContainer) appContainer.style.display = 'block';
             
             // Update user info
             if (currentUser) {
                 const userName = currentUser.displayName || currentUser.email.split('@')[0];
-                document.getElementById('user-name').textContent = userName;
-                document.getElementById('user-role').textContent = "Operatör";
+                const userNameElement = document.getElementById('user-name');
+                const userRoleElement = document.getElementById('user-role');
+                
+                if (userNameElement) userNameElement.textContent = userName;
+                if (userRoleElement) userRoleElement.textContent = "Operatör";
                 
                 // Update avatar
                 const avatarElement = document.getElementById('user-avatar');
-                if (currentUser.photoURL) {
-                    avatarElement.innerHTML = `<img src="${currentUser.photoURL}" alt="${userName}">`;
-                } else {
-                    const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
-                    avatarElement.innerHTML = `<span>${initials.substring(0, 2)}</span>`;
+                if (avatarElement) {
+                    if (currentUser.photoURL) {
+                        avatarElement.innerHTML = `<img src="${currentUser.photoURL}" alt="${userName}">`;
+                    } else {
+                        const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+                        avatarElement.innerHTML = `<span>${initials.substring(0, 2)}</span>`;
+                    }
                 }
             }
+            
+            // Setup event listeners for app
+            setupEventListeners();
         }
 
         // Switch to login tab
         function switchToLoginTab() {
-            document.getElementById('login-tab').classList.add('active');
-            document.getElementById('register-tab').classList.remove('active');
-            document.getElementById('login-form').classList.add('active');
-            document.getElementById('register-form').classList.remove('active');
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (loginTab) loginTab.classList.add('active');
+            if (registerTab) registerTab.classList.remove('active');
+            if (loginForm) loginForm.classList.add('active');
+            if (registerForm) registerForm.classList.remove('active');
         }
 
         // Switch to register tab
         function switchToRegisterTab() {
-            document.getElementById('register-tab').classList.add('active');
-            document.getElementById('login-tab').classList.remove('active');
-            document.getElementById('register-form').classList.add('active');
-            document.getElementById('login-form').classList.remove('active');
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (registerTab) registerTab.classList.add('active');
+            if (loginTab) loginTab.classList.remove('active');
+            if (registerForm) registerForm.classList.add('active');
+            if (loginForm) loginForm.classList.remove('active');
         }
 
         // Clear auth messages
         function clearAuthMessages() {
-            document.getElementById('auth-error').style.display = 'none';
-            document.getElementById('auth-success').style.display = 'none';
+            const errorElement = document.getElementById('auth-error');
+            const successElement = document.getElementById('auth-success');
+            
+            if (errorElement) errorElement.style.display = 'none';
+            if (successElement) successElement.style.display = 'none';
         }
 
         // Show error message
         function showError(message) {
             const errorElement = document.getElementById('auth-error');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-            
-            setTimeout(() => {
-                errorElement.style.display = 'none';
-            }, 5000);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 5000);
+            }
         }
 
         // Show success message
         function showSuccess(message) {
             const successElement = document.getElementById('auth-success');
-            successElement.textContent = message;
-            successElement.style.display = 'block';
-            
-            setTimeout(() => {
-                successElement.style.display = 'none';
-            }, 3000);
+            if (successElement) {
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                
+                setTimeout(() => {
+                    successElement.style.display = 'none';
+                }, 3000);
+            }
         }
 
         // Show loading on button
@@ -1580,8 +1665,16 @@
         async function handleLogin(e) {
             e.preventDefault();
             
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            
+            if (!emailInput || !passwordInput) {
+                showError('Form elemanları yüklenemedi.');
+                return;
+            }
+            
+            const email = emailInput.value;
+            const password = passwordInput.value;
             
             if (!email || !password) {
                 showError('Lütfen tüm alanları doldurun.');
@@ -1616,10 +1709,20 @@
         async function handleRegister(e) {
             e.preventDefault();
             
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const passwordConfirm = document.getElementById('register-password-confirm').value;
+            const nameInput = document.getElementById('register-name');
+            const emailInput = document.getElementById('register-email');
+            const passwordInput = document.getElementById('register-password');
+            const passwordConfirmInput = document.getElementById('register-password-confirm');
+            
+            if (!nameInput || !emailInput || !passwordInput || !passwordConfirmInput) {
+                showError('Form elemanları yüklenemedi.');
+                return;
+            }
+            
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const passwordConfirm = passwordConfirmInput.value;
             
             // Validation
             if (!name || !email || !password || !passwordConfirm) {
@@ -1651,8 +1754,9 @@
                 
                 // Switch to login tab
                 switchToLoginTab();
-                document.getElementById('login-email').value = email;
-                document.getElementById('register-form').reset();
+                if (emailInput) emailInput.value = email;
+                if (passwordInput) passwordInput.value = '';
+                if (passwordConfirmInput) passwordConfirmInput.value = '';
                 
             } catch (error) {
                 console.error('Register error:', error);
@@ -1733,10 +1837,13 @@
                 minute: '2-digit'
             });
             
-            document.getElementById('current-date').innerHTML = `
-                <div>${dateStr}</div>
-                <div>${timeStr}</div>
-            `;
+            const dateElement = document.getElementById('current-date');
+            if (dateElement) {
+                dateElement.innerHTML = `
+                    <div>${dateStr}</div>
+                    <div>${timeStr}</div>
+                `;
+            }
         }
 
         // Load all data from Firestore
@@ -1758,7 +1865,8 @@
         // Load requests from Firestore
         async function loadRequestsFromFirestore() {
             try {
-                document.getElementById('data-loading').style.display = 'block';
+                const dataLoading = document.getElementById('data-loading');
+                if (dataLoading) dataLoading.style.display = 'block';
                 
                 const querySnapshot = await db.collection('requests')
                     .orderBy('createdAt', 'desc')
@@ -1774,8 +1882,10 @@
                 });
                 
                 updateRequestsList();
-                document.getElementById('data-loading').style.display = 'none';
-                document.getElementById('requests-table').style.display = 'table';
+                if (dataLoading) dataLoading.style.display = 'none';
+                
+                const requestsTable = document.getElementById('requests-table');
+                if (requestsTable) requestsTable.style.display = 'table';
                 
             } catch (error) {
                 console.error('Error loading requests:', error);
@@ -1786,7 +1896,8 @@
         // Load operators from Firestore
         async function loadOperatorsFromFirestore() {
             try {
-                document.getElementById('operators-loading').style.display = 'block';
+                const operatorsLoading = document.getElementById('operators-loading');
+                if (operatorsLoading) operatorsLoading.style.display = 'block';
                 
                 const querySnapshot = await db.collection('operators')
                     .orderBy('name')
@@ -1808,7 +1919,7 @@
                 } else {
                     updateOperatorsList();
                     updateOperatorDropdown();
-                    document.getElementById('operators-loading').style.display = 'none';
+                    if (operatorsLoading) operatorsLoading.style.display = 'none';
                 }
                 
             } catch (error) {
@@ -1943,28 +2054,35 @@
             updateRequestsList();
             updateOperatorsList();
             updateOperatorDropdown();
-            document.getElementById('data-loading').style.display = 'none';
-            document.getElementById('requests-table').style.display = 'table';
-            document.getElementById('operators-loading').style.display = 'none';
+            
+            const dataLoading = document.getElementById('data-loading');
+            const operatorsLoading = document.getElementById('operators-loading');
+            const requestsTable = document.getElementById('requests-table');
+            
+            if (dataLoading) dataLoading.style.display = 'none';
+            if (operatorsLoading) operatorsLoading.style.display = 'none';
+            if (requestsTable) requestsTable.style.display = 'table';
         }
 
         // Update requests list
         function updateRequestsList() {
             const tbody = document.getElementById('requests-list');
+            if (!tbody) return;
+            
             tbody.innerHTML = '';
             
             // Apply filters
-            const statusFilter = document.getElementById('status-filter').value;
-            const unitFilter = document.getElementById('unit-filter').value;
+            const statusFilter = document.getElementById('status-filter');
+            const unitFilter = document.getElementById('unit-filter');
             
             let filteredRequests = requests;
             
-            if (statusFilter !== 'all') {
-                filteredRequests = filteredRequests.filter(req => req.status === statusFilter);
+            if (statusFilter && statusFilter.value !== 'all') {
+                filteredRequests = filteredRequests.filter(req => req.status === statusFilter.value);
             }
             
-            if (unitFilter !== 'all') {
-                filteredRequests = filteredRequests.filter(req => req.unit === unitFilter);
+            if (unitFilter && unitFilter.value !== 'all') {
+                filteredRequests = filteredRequests.filter(req => req.unit === unitFilter.value);
             }
             
             filteredRequests.forEach(request => {
@@ -2049,20 +2167,22 @@
         // Update operators list
         function updateOperatorsList() {
             const operatorsList = document.getElementById('operators-list');
+            if (!operatorsList) return;
+            
             operatorsList.innerHTML = '';
             
             // Apply filters
-            const statusFilter = document.getElementById('operator-status-filter').value;
-            const specialtyFilter = document.getElementById('operator-specialty-filter').value;
+            const statusFilter = document.getElementById('operator-status-filter');
+            const specialtyFilter = document.getElementById('operator-specialty-filter');
             
             let filteredOperators = operators;
             
-            if (statusFilter !== 'all') {
-                filteredOperators = filteredOperators.filter(op => op.status === statusFilter);
+            if (statusFilter && statusFilter.value !== 'all') {
+                filteredOperators = filteredOperators.filter(op => op.status === statusFilter.value);
             }
             
-            if (specialtyFilter !== 'all') {
-                filteredOperators = filteredOperators.filter(op => op.specialty === specialtyFilter);
+            if (specialtyFilter && specialtyFilter.value !== 'all') {
+                filteredOperators = filteredOperators.filter(op => op.specialty === specialtyFilter.value);
             }
             
             // Calculate statistics for each operator
@@ -2110,7 +2230,10 @@
             });
             
             // Update operator count in stats
-            document.getElementById('total-operators').textContent = operators.filter(op => op.status === 'aktif').length;
+            const totalOperatorsElement = document.getElementById('total-operators');
+            if (totalOperatorsElement) {
+                totalOperatorsElement.textContent = operators.filter(op => op.status === 'aktif').length;
+            }
             
             // Add event listeners to operator buttons
             document.querySelectorAll('.edit-operator').forEach(btn => {
@@ -2132,6 +2255,8 @@
         // Update operator dropdown
         function updateOperatorDropdown() {
             const dropdown = document.getElementById('start-job-operator');
+            if (!dropdown) return;
+            
             dropdown.innerHTML = '<option value="">Operatör Seçiniz</option>';
             
             const activeOperators = operators.filter(op => op.status === 'aktif');
@@ -2181,17 +2306,27 @@
                 ? (completedTasks.reduce((sum, req) => sum + (req.actualDays || 0), 0) / completedTasks.length).toFixed(1)
                 : "0.0";
             
-            document.getElementById('total-requests').textContent = totalRequests;
-            document.getElementById('pending-requests').textContent = pendingRequests;
-            document.getElementById('inprogress-requests').textContent = inprogressRequests;
-            document.getElementById('completed-tasks').textContent = completedRequests;
-            document.getElementById('total-operators').textContent = activeOperators;
-            document.getElementById('avg-completion-time').textContent = avgCompletionTime;
+            const totalRequestsElement = document.getElementById('total-requests');
+            const pendingRequestsElement = document.getElementById('pending-requests');
+            const inprogressRequestsElement = document.getElementById('inprogress-requests');
+            const completedTasksElement = document.getElementById('completed-tasks');
+            const totalOperatorsElement = document.getElementById('total-operators');
+            const avgCompletionTimeElement = document.getElementById('avg-completion-time');
+            
+            if (totalRequestsElement) totalRequestsElement.textContent = totalRequests;
+            if (pendingRequestsElement) pendingRequestsElement.textContent = pendingRequests;
+            if (inprogressRequestsElement) inprogressRequestsElement.textContent = inprogressRequests;
+            if (completedTasksElement) completedTasksElement.textContent = completedRequests;
+            if (totalOperatorsElement) totalOperatorsElement.textContent = activeOperators;
+            if (avgCompletionTimeElement) avgCompletionTimeElement.textContent = avgCompletionTime;
         }
 
         // Update detailed statistics
         function updateStatistics() {
-            const period = document.getElementById('stats-period').value;
+            const statsPeriod = document.getElementById('stats-period');
+            if (!statsPeriod) return;
+            
+            const period = statsPeriod.value;
             const now = new Date();
             let startDate;
             
@@ -2274,46 +2409,141 @@
             });
             
             // Update stats cards
-            document.getElementById('stats-total-jobs').textContent = totalJobs;
-            document.getElementById('stats-completion-rate').textContent = `${completionRate}%`;
-            document.getElementById('stats-delayed-jobs').textContent = delayedJobs;
-            document.getElementById('stats-top-operator').textContent = topOperator;
+            const statsTotalJobs = document.getElementById('stats-total-jobs');
+            const statsCompletionRate = document.getElementById('stats-completion-rate');
+            const statsDelayedJobs = document.getElementById('stats-delayed-jobs');
+            const statsTopOperator = document.getElementById('stats-top-operator');
+            
+            if (statsTotalJobs) statsTotalJobs.textContent = totalJobs;
+            if (statsCompletionRate) statsCompletionRate.textContent = `${completionRate}%`;
+            if (statsDelayedJobs) statsDelayedJobs.textContent = delayedJobs;
+            if (statsTopOperator) statsTopOperator.textContent = topOperator;
             
             // Update unit statistics table
             const unitStatsList = document.getElementById('unit-stats-list');
-            unitStatsList.innerHTML = '';
-            
-            for (const [unit, stats] of Object.entries(unitStats)) {
-                const avgDays = stats.count > 0 ? (stats.totalDays / stats.count).toFixed(1) : '0.0';
+            if (unitStatsList) {
+                unitStatsList.innerHTML = '';
                 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${unit}</td>
-                    <td>${stats.total}</td>
-                    <td>${stats.completed}</td>
-                    <td>${stats.inprogress}</td>
-                    <td>${avgDays}</td>
-                `;
-                unitStatsList.appendChild(row);
+                for (const [unit, stats] of Object.entries(unitStats)) {
+                    const avgDays = stats.count > 0 ? (stats.totalDays / stats.count).toFixed(1) : '0.0';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${unit}</td>
+                        <td>${stats.total}</td>
+                        <td>${stats.completed}</td>
+                        <td>${stats.inprogress}</td>
+                        <td>${avgDays}</td>
+                    `;
+                    unitStatsList.appendChild(row);
+                }
+            }
+        }
+
+        // Menu navigation functions - FIXED VERSION
+        function showDashboard() {
+            setActiveMenu('menu-dashboard');
+            
+            const dashboardContent = document.getElementById('dashboard-content');
+            const requestsContent = document.getElementById('requests-content');
+            const operatorsContent = document.getElementById('operators-content');
+            const statsContent = document.getElementById('stats-content');
+            
+            if (dashboardContent) dashboardContent.style.display = 'block';
+            if (requestsContent) requestsContent.style.display = 'none';
+            if (operatorsContent) operatorsContent.style.display = 'none';
+            if (statsContent) statsContent.style.display = 'none';
+        }
+        
+        function showAllRequests() {
+            setActiveMenu('menu-requests');
+            
+            const dashboardContent = document.getElementById('dashboard-content');
+            const requestsContent = document.getElementById('requests-content');
+            const operatorsContent = document.getElementById('operators-content');
+            const statsContent = document.getElementById('stats-content');
+            
+            if (dashboardContent) dashboardContent.style.display = 'none';
+            if (requestsContent) requestsContent.style.display = 'block';
+            if (operatorsContent) operatorsContent.style.display = 'none';
+            if (statsContent) statsContent.style.display = 'none';
+        }
+        
+        function showOperators() {
+            setActiveMenu('menu-operators');
+            
+            const dashboardContent = document.getElementById('dashboard-content');
+            const requestsContent = document.getElementById('requests-content');
+            const operatorsContent = document.getElementById('operators-content');
+            const statsContent = document.getElementById('stats-content');
+            
+            if (dashboardContent) dashboardContent.style.display = 'none';
+            if (requestsContent) requestsContent.style.display = 'none';
+            if (operatorsContent) operatorsContent.style.display = 'block';
+            if (statsContent) statsContent.style.display = 'none';
+        }
+        
+        function showStats() {
+            setActiveMenu('menu-stats');
+            
+            const dashboardContent = document.getElementById('dashboard-content');
+            const requestsContent = document.getElementById('requests-content');
+            const operatorsContent = document.getElementById('operators-content');
+            const statsContent = document.getElementById('stats-content');
+            
+            if (dashboardContent) dashboardContent.style.display = 'none';
+            if (requestsContent) requestsContent.style.display = 'none';
+            if (operatorsContent) operatorsContent.style.display = 'none';
+            if (statsContent) statsContent.style.display = 'block';
+            
+            updateStatistics();
+        }
+        
+        function setActiveMenu(menuId) {
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item a').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked menu item
+            const menuItem = document.getElementById(menuId);
+            if (menuItem) {
+                menuItem.classList.add('active');
             }
         }
 
         // Open add request modal
         function openAddRequestModal() {
-            document.getElementById('modal-title').textContent = 'Yeni Talep Ekle';
-            document.getElementById('modal-submit-btn').textContent = 'Talep Ekle';
-            document.getElementById('request-form').reset();
-            document.getElementById('request-id').value = '';
-            document.getElementById('request-modal').style.display = 'flex';
+            const modalTitle = document.getElementById('modal-title');
+            const modalSubmitBtn = document.getElementById('modal-submit-btn');
+            const requestForm = document.getElementById('request-form');
+            const requestModal = document.getElementById('request-modal');
+            
+            if (modalTitle) modalTitle.textContent = 'Yeni Talep Ekle';
+            if (modalSubmitBtn) modalSubmitBtn.textContent = 'Talep Ekle';
+            if (requestForm) requestForm.reset();
+            
+            const requestId = document.getElementById('request-id');
+            if (requestId) requestId.value = '';
+            
+            if (requestModal) requestModal.style.display = 'flex';
         }
 
         // Open add operator modal
         function openAddOperatorModal() {
-            document.getElementById('operator-modal-title').textContent = 'Yeni Operatör Ekle';
-            document.getElementById('operator-modal-submit-btn').textContent = 'Operatör Ekle';
-            document.getElementById('operator-form').reset();
-            document.getElementById('operator-id').value = '';
-            document.getElementById('operator-modal').style.display = 'flex';
+            const modalTitle = document.getElementById('operator-modal-title');
+            const modalSubmitBtn = document.getElementById('operator-modal-submit-btn');
+            const operatorForm = document.getElementById('operator-form');
+            const operatorModal = document.getElementById('operator-modal');
+            
+            if (modalTitle) modalTitle.textContent = 'Yeni Operatör Ekle';
+            if (modalSubmitBtn) modalSubmitBtn.textContent = 'Operatör Ekle';
+            if (operatorForm) operatorForm.reset();
+            
+            const operatorId = document.getElementById('operator-id');
+            if (operatorId) operatorId.value = '';
+            
+            if (operatorModal) operatorModal.style.display = 'flex';
         }
 
         // Open edit operator modal
@@ -2321,51 +2551,79 @@
             const operator = operators.find(op => op.id === operatorId);
             if (!operator) return;
             
-            document.getElementById('operator-modal-title').textContent = 'Operatör Düzenle';
-            document.getElementById('operator-modal-submit-btn').textContent = 'Güncelle';
+            const modalTitle = document.getElementById('operator-modal-title');
+            const modalSubmitBtn = document.getElementById('operator-modal-submit-btn');
+            const operatorName = document.getElementById('operator-name');
+            const operatorEmail = document.getElementById('operator-email');
+            const operatorPhone = document.getElementById('operator-phone');
+            const operatorSpecialty = document.getElementById('operator-specialty');
+            const operatorExperience = document.getElementById('operator-experience');
+            const operatorStatus = document.getElementById('operator-status');
+            const operatorNotes = document.getElementById('operator-notes');
+            const operatorIdInput = document.getElementById('operator-id');
+            const operatorModal = document.getElementById('operator-modal');
             
-            document.getElementById('operator-name').value = operator.name || '';
-            document.getElementById('operator-email').value = operator.email || '';
-            document.getElementById('operator-phone').value = operator.phone || '';
-            document.getElementById('operator-specialty').value = operator.specialty || '';
-            document.getElementById('operator-experience').value = operator.experience || 1;
-            document.getElementById('operator-status').value = operator.status || 'aktif';
-            document.getElementById('operator-notes').value = operator.notes || '';
-            document.getElementById('operator-id').value = operatorId;
+            if (modalTitle) modalTitle.textContent = 'Operatör Düzenle';
+            if (modalSubmitBtn) modalSubmitBtn.textContent = 'Güncelle';
             
-            document.getElementById('operator-modal').style.display = 'flex';
+            if (operatorName) operatorName.value = operator.name || '';
+            if (operatorEmail) operatorEmail.value = operator.email || '';
+            if (operatorPhone) operatorPhone.value = operator.phone || '';
+            if (operatorSpecialty) operatorSpecialty.value = operator.specialty || '';
+            if (operatorExperience) operatorExperience.value = operator.experience || 1;
+            if (operatorStatus) operatorStatus.value = operator.status || 'aktif';
+            if (operatorNotes) operatorNotes.value = operator.notes || '';
+            if (operatorIdInput) operatorIdInput.value = operatorId;
+            
+            if (operatorModal) operatorModal.style.display = 'flex';
         }
 
         // Open start job modal
         function openStartJobModal(requestId) {
-            document.getElementById('start-job-id').value = requestId;
+            const startJobId = document.getElementById('start-job-id');
+            const startJobOperator = document.getElementById('start-job-operator');
+            const startJobModal = document.getElementById('start-job-modal');
+            
+            if (startJobId) startJobId.value = requestId;
             
             // Fill request info if available
             const request = requests.find(req => req.id === requestId);
-            if (request && request.operator) {
-                document.getElementById('start-job-operator').value = request.operator;
+            if (request && request.operator && startJobOperator) {
+                startJobOperator.value = request.operator;
             }
             
-            document.getElementById('start-job-modal').style.display = 'flex';
+            if (startJobModal) startJobModal.style.display = 'flex';
         }
 
         // Open complete job modal
         function openCompleteJobModal(requestId) {
-            document.getElementById('complete-job-id').value = requestId;
+            const completeJobId = document.getElementById('complete-job-id');
+            const actualDays = document.getElementById('actual-days');
+            const completeJobModal = document.getElementById('complete-job-modal');
+            
+            if (completeJobId) completeJobId.value = requestId;
             
             // Fill request info
             const request = requests.find(req => req.id === requestId);
-            if (request) {
-                document.getElementById('actual-days').value = request.estimatedDays || 3;
+            if (request && actualDays) {
+                actualDays.value = request.estimatedDays || 3;
             }
             
-            document.getElementById('complete-job-modal').style.display = 'flex';
+            if (completeJobModal) completeJobModal.style.display = 'flex';
         }
 
         // Open delete confirmation modal
         function openDeleteModal(itemId, type, itemName) {
-            document.getElementById('delete-id').value = itemId;
-            document.getElementById('delete-type').value = type;
+            const deleteId = document.getElementById('delete-id');
+            const deleteType = document.getElementById('delete-type');
+            const deleteModalTitle = document.getElementById('delete-modal-title');
+            const deleteMessage = document.getElementById('delete-message');
+            const deleteModal = document.getElementById('delete-modal');
+            
+            if (!deleteId || !deleteType || !deleteModalTitle || !deleteMessage || !deleteModal) return;
+            
+            deleteId.value = itemId;
+            deleteType.value = type;
             
             let message = '';
             let title = '';
@@ -2378,9 +2636,9 @@
                 message = `Bu talebi (No: ${itemId}) silmek istediğinizden emin misiniz?`;
             }
             
-            document.getElementById('delete-modal-title').textContent = title;
-            document.getElementById('delete-message').textContent = message;
-            document.getElementById('delete-modal').style.display = 'flex';
+            deleteModalTitle.textContent = title;
+            deleteMessage.textContent = message;
+            deleteModal.style.display = 'flex';
         }
 
         // Close all modals
@@ -2400,10 +2658,20 @@
                 return;
             }
             
-            const unit = document.getElementById('request-unit').value;
-            const description = document.getElementById('request-description').value;
-            const estimatedDays = parseInt(document.getElementById('request-estimated').value);
-            const urgency = document.getElementById('request-urgency').value;
+            const unitSelect = document.getElementById('request-unit');
+            const descriptionTextarea = document.getElementById('request-description');
+            const estimatedDaysInput = document.getElementById('request-estimated');
+            const urgencySelect = document.getElementById('request-urgency');
+            
+            if (!unitSelect || !descriptionTextarea || !estimatedDaysInput || !urgencySelect) {
+                showError('Form elemanları yüklenemedi.');
+                return;
+            }
+            
+            const unit = unitSelect.value;
+            const description = descriptionTextarea.value;
+            const estimatedDays = parseInt(estimatedDaysInput.value);
+            const urgency = urgencySelect.value;
             
             if (!unit || !description || !estimatedDays) {
                 showError('Lütfen tüm alanları doldurun.');
@@ -2448,14 +2716,28 @@
         async function handleOperatorSubmit(e) {
             e.preventDefault();
             
-            const operatorId = document.getElementById('operator-id').value;
-            const name = document.getElementById('operator-name').value;
-            const email = document.getElementById('operator-email').value;
-            const phone = document.getElementById('operator-phone').value;
-            const specialty = document.getElementById('operator-specialty').value;
-            const experience = parseInt(document.getElementById('operator-experience').value) || 0;
-            const status = document.getElementById('operator-status').value;
-            const notes = document.getElementById('operator-notes').value;
+            const operatorId = document.getElementById('operator-id');
+            const operatorName = document.getElementById('operator-name');
+            const operatorEmail = document.getElementById('operator-email');
+            const operatorPhone = document.getElementById('operator-phone');
+            const operatorSpecialty = document.getElementById('operator-specialty');
+            const operatorExperience = document.getElementById('operator-experience');
+            const operatorStatus = document.getElementById('operator-status');
+            const operatorNotes = document.getElementById('operator-notes');
+            
+            if (!operatorId || !operatorName || !operatorSpecialty) {
+                showError('Form elemanları yüklenemedi.');
+                return;
+            }
+            
+            const id = operatorId.value;
+            const name = operatorName.value;
+            const email = operatorEmail ? operatorEmail.value : '';
+            const phone = operatorPhone ? operatorPhone.value : '';
+            const specialty = operatorSpecialty.value;
+            const experience = operatorExperience ? parseInt(operatorExperience.value) || 0 : 0;
+            const status = operatorStatus ? operatorStatus.value : 'aktif';
+            const notes = operatorNotes ? operatorNotes.value : '';
             
             if (!name || !specialty) {
                 showError('Lütfen zorunlu alanları doldurun (Ad, Uzmanlık).');
@@ -2475,14 +2757,14 @@
                 };
                 
                 // Add createdBy and createdAt for new operators
-                if (!operatorId) {
+                if (!id) {
                     operatorData.createdBy = currentUser.email;
                     operatorData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                 }
                 
-                if (operatorId) {
+                if (id) {
                     // Update existing operator
-                    await db.collection('operators').doc(operatorId).update(operatorData);
+                    await db.collection('operators').doc(id).update(operatorData);
                     showSuccess('Operatör başarıyla güncellendi!');
                 } else {
                     // Add new operator
@@ -2501,9 +2783,18 @@
 
         // Handle start job
         async function handleStartJob() {
-            const requestId = document.getElementById('start-job-id').value;
-            const operator = document.getElementById('start-job-operator').value;
-            const notes = document.getElementById('start-job-notes').value;
+            const startJobId = document.getElementById('start-job-id');
+            const startJobOperator = document.getElementById('start-job-operator');
+            const startJobNotes = document.getElementById('start-job-notes');
+            
+            if (!startJobId || !startJobOperator) {
+                showError('Form elemanları yüklenemedi.');
+                return;
+            }
+            
+            const requestId = startJobId.value;
+            const operator = startJobOperator.value;
+            const notes = startJobNotes ? startJobNotes.value : '';
             
             if (!operator) {
                 showError('Lütfen bir operatör seçin!');
@@ -2536,9 +2827,18 @@
 
         // Handle complete job
         async function handleCompleteJob() {
-            const requestId = document.getElementById('complete-job-id').value;
-            const actualDays = parseInt(document.getElementById('actual-days').value);
-            const notes = document.getElementById('completion-notes').value;
+            const completeJobId = document.getElementById('complete-job-id');
+            const actualDaysInput = document.getElementById('actual-days');
+            const completionNotes = document.getElementById('completion-notes');
+            
+            if (!completeJobId || !actualDaysInput) {
+                showError('Form elemanları yüklenemedi.');
+                return;
+            }
+            
+            const requestId = completeJobId.value;
+            const actualDays = parseInt(actualDaysInput.value);
+            const notes = completionNotes ? completionNotes.value : '';
             
             if (!actualDays || actualDays < 1) {
                 showError('Lütfen geçerli bir tamamlanma süresi girin!');
@@ -2571,8 +2871,16 @@
 
         // Handle delete
         async function handleDelete() {
-            const itemId = document.getElementById('delete-id').value;
-            const type = document.getElementById('delete-type').value;
+            const deleteId = document.getElementById('delete-id');
+            const deleteType = document.getElementById('delete-type');
+            
+            if (!deleteId || !deleteType) {
+                showError('Silme işlemi için gerekli bilgiler yüklenemedi.');
+                return;
+            }
+            
+            const itemId = deleteId.value;
+            const type = deleteType.value;
             
             try {
                 if (type === 'operator') {
@@ -2596,51 +2904,6 @@
                 console.error('Error deleting item:', error);
                 showError('Silme işlemi sırasında bir hata oluştu.');
             }
-        }
-
-        // Menu navigation functions
-        function showDashboard() {
-            setActiveMenu('menu-dashboard');
-            document.getElementById('dashboard-content').style.display = 'block';
-            document.getElementById('requests-content').style.display = 'none';
-            document.getElementById('operators-content').style.display = 'none';
-            document.getElementById('stats-content').style.display = 'none';
-        }
-        
-        function showAllRequests() {
-            setActiveMenu('menu-requests');
-            document.getElementById('dashboard-content').style.display = 'none';
-            document.getElementById('requests-content').style.display = 'block';
-            document.getElementById('operators-content').style.display = 'none';
-            document.getElementById('stats-content').style.display = 'none';
-        }
-        
-        function showOperators() {
-            setActiveMenu('menu-operators');
-            document.getElementById('dashboard-content').style.display = 'none';
-            document.getElementById('requests-content').style.display = 'none';
-            document.getElementById('operators-content').style.display = 'block';
-            document.getElementById('stats-content').style.display = 'none';
-        }
-        
-        function showStats() {
-            setActiveMenu('menu-stats');
-            document.getElementById('dashboard-content').style.display = 'none';
-            document.getElementById('requests-content').style.display = 'none';
-            document.getElementById('operators-content').style.display = 'none';
-            document.getElementById('stats-content').style.display = 'block';
-            
-            updateStatistics();
-        }
-        
-        function setActiveMenu(menuId) {
-            // Remove active class from all menu items
-            document.querySelectorAll('.menu-item a').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to clicked menu item
-            document.getElementById(menuId).classList.add('active');
         }
     </script>
 </body>
